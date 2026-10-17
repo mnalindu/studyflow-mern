@@ -1,12 +1,14 @@
 
 import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
 
 function App() {
   return (
     <>
       <Navbar />
+
       <main id="home">
-        {/* Hero section will be added next */}
+        <Hero />
       </main>
     </>
   );
