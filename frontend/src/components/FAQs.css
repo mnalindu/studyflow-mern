@@ -1,0 +1,250 @@
+
+/* =====================================
+   StudyFlow - FAQs Accordion Section
+===================================== */
+
+.sf-faq,
+.sf-faq * {
+  box-sizing: border-box;
+}
+
+.sf-faq {
+  width: 100%;
+  background: #fbfcf7;
+  font-family: "DM Sans", sans-serif;
+  color: #63874b;
+  scroll-margin-top: 95px;
+}
+
+.sf-faq__container {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(50px, 7vw, 130px);
+  align-items: start;
+
+  width: min(100% - 192px, 1536px);
+  margin: 0 auto;
+  padding: 92px 28px 92px;
+}
+
+/* =====================================
+   Left Side
+===================================== */
+
+.sf-faq__intro {
+  max-width: 550px;
+}
+
+.sf-faq__eyebrow {
+  margin: 0 0 28px;
+  color: #79915e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2.1px;
+  line-height: 1.5;
+}
+
+.sf-faq__intro h2 {
+  margin: 0;
+  color: #3d623e;
+  font-size: clamp(35px, 3vw, 48px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -2.3px;
+}
+
+.sf-faq__intro h2 span {
+  color: #88a76a;
+}
+
+/* =====================================
+   Right Side FAQ List
+===================================== */
+
+.sf-faq__list {
+  width: 100%;
+}
+
+.sf-faq__item {
+  width: 100%;
+  border-bottom: 1px solid #dfe7d5;
+}
+
+.sf-faq__question {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.sf-faq__button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+
+  width: 100%;
+  min-height: 81px;
+  padding: 18px 3px 18px 0;
+
+  border: none;
+  background: transparent;
+
+  color: #668b4e;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.sf-faq__button:hover {
+  color: #315f43;
+}
+
+.sf-faq__button:focus-visible {
+  outline: 2px solid #86a864;
+  outline-offset: -3px;
+  border-radius: 4px;
+}
+
+/* Plus / Minus Icon */
+
+.sf-faq__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 27px;
+
+  width: 27px;
+  height: 27px;
+
+  color: #91b477;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* Opened Accordion Answer */
+
+.sf-faq__answer {
+  padding: 0 50px 25px 0;
+}
+
+.sf-faq__answer[hidden] {
+  display: none;
+}
+
+.sf-faq__answer p {
+  max-width: 670px;
+  margin: 0;
+
+  color: #748c67;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.85;
+}
+
+.sf-faq__item--open .sf-faq__button {
+  color: #3d623e;
+}
+
+/* =====================================
+   Laptop
+===================================== */
+
+@media (max-width: 1300px) {
+  .sf-faq__container {
+    width: calc(100% - 100px);
+    gap: 65px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .sf-faq__intro h2 {
+    font-size: 41px;
+  }
+
+  .sf-faq__button {
+    font-size: 17px;
+  }
+}
+
+/* =====================================
+   Tablet
+===================================== */
+
+@media (max-width: 950px) {
+  .sf-faq__container {
+    grid-template-columns: 1fr;
+    width: calc(100% - 60px);
+    gap: 40px;
+    padding: 75px 10px;
+  }
+
+  .sf-faq__intro {
+    max-width: 700px;
+  }
+
+  .sf-faq__intro h2 {
+    font-size: clamp(38px, 5vw, 48px);
+  }
+
+  .sf-faq__button {
+    min-height: 76px;
+  }
+}
+
+/* =====================================
+   Mobile
+===================================== */
+
+@media (max-width: 620px) {
+  .sf-faq__container {
+    width: calc(100% - 40px);
+    gap: 28px;
+    padding: 60px 0 75px;
+  }
+
+  .sf-faq__eyebrow {
+    margin-bottom: 22px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+
+  .sf-faq__intro h2 {
+    font-size: clamp(32px, 8vw, 42px);
+    letter-spacing: -1.5px;
+  }
+
+  .sf-faq__button {
+    min-height: 72px;
+    gap: 15px;
+    padding: 16px 0;
+    font-size: 15px;
+  }
+
+  .sf-faq__icon {
+    flex-basis: 23px;
+    width: 23px;
+    height: 23px;
+    font-size: 24px;
+  }
+
+  .sf-faq__answer {
+    padding: 0 30px 22px 0;
+  }
+
+  .sf-faq__answer p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-faq__button {
+    transition: none;
+  }
+}
