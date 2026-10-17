@@ -1,0 +1,138 @@
+
+.site-header {
+  position: relative;
+  z-index: 100;
+  background: #fbfaf5;
+}
+
+.navbar {
+  width: min(1700px, calc(100% - 48px));
+  min-height: 104px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #315f40;
+  font-size: 33px;
+  font-weight: 800;
+  letter-spacing: -1.7px;
+}
+
+.brand-icon {
+  height: 54px;
+  width: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #315f40;
+  color: #fff;
+  border-radius: 15px;
+}
+
+.brand-dot {
+  color: #94b86e;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-links a {
+  color: #697d62;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #315f40;
+}
+
+.dashboard-button {
+  background: #315f40;
+  color: #fff;
+  padding: 17px 23px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 6px 14px rgba(49, 95, 64, 0.08);
+}
+
+.dashboard-button:hover {
+  background: #264d34;
+}
+
+.menu-toggle,
+.mobile-dashboard {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    min-height: 82px;
+  }
+
+  .brand {
+    font-size: 25px;
+  }
+
+  .brand-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dashboard-button {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+    border: none;
+    background: transparent;
+    color: #315f40;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 76px;
+    left: 0;
+    right: 0;
+    transform: none;
+    background: #fbfaf5;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links .mobile-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #315f40;
+  }
+}
