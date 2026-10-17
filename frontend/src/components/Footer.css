@@ -1,0 +1,203 @@
+
+/* =====================================
+   StudyFlow Footer
+===================================== */
+
+.sf-footer,
+.sf-footer * {
+  box-sizing: border-box;
+}
+
+.sf-footer {
+  width: 100%;
+  padding: 62px 0 45px;
+  background: #fbfcf7;
+  font-family: "DM Sans", sans-serif;
+  color: #759359;
+}
+
+.sf-footer__container {
+  width: min(100% - 192px, 1536px);
+  margin: 0 auto;
+}
+
+/* Footer Top Row */
+
+.sf-footer__top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  min-height: 65px;
+  padding-bottom: 31px;
+}
+
+/* Logo */
+
+.sf-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 12px;
+  color: #658d4d;
+  text-decoration: none;
+}
+
+.sf-footer__logo-icon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  border-radius: 12px;
+  background: #94b476;
+  color: white;
+}
+
+.sf-footer__brand-text {
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -1.3px;
+}
+
+.sf-footer__brand-text > span {
+  color: #9bb775;
+}
+
+/* Center Tagline */
+
+.sf-footer__tagline {
+  margin: 0;
+  color: #829d6b;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Footer Navigation */
+
+.sf-footer__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.sf-footer__navigation a {
+  color: #719052;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.sf-footer__navigation a:hover {
+  color: #315f43;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Bottom Footer */
+
+.sf-footer__bottom {
+  margin-top: 0;
+  padding-top: 27px;
+  border-top: 1px solid #e0e8d6;
+}
+
+.sf-footer__bottom p {
+  margin: 0;
+  color: #91aa7a;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* =====================================
+   Laptop
+===================================== */
+
+@media (max-width: 1300px) {
+  .sf-footer__container {
+    width: calc(100% - 100px);
+  }
+
+  .sf-footer__navigation {
+    gap: 22px;
+  }
+}
+
+/* =====================================
+   Tablet
+===================================== */
+
+@media (max-width: 950px) {
+  .sf-footer__container {
+    width: calc(100% - 60px);
+  }
+
+  .sf-footer__top {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 24px;
+  }
+
+  .sf-footer__tagline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    text-align: left;
+  }
+
+  .sf-footer__navigation {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+/* =====================================
+   Mobile
+===================================== */
+
+@media (max-width: 620px) {
+  .sf-footer {
+    padding: 42px 0 32px;
+  }
+
+  .sf-footer__container {
+    width: calc(100% - 40px);
+  }
+
+  .sf-footer__top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 21px;
+    padding-bottom: 27px;
+  }
+
+  .sf-footer__brand-text {
+    font-size: 27px;
+  }
+
+  .sf-footer__tagline {
+    font-size: 14px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .sf-footer__navigation {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 25px;
+  }
+
+  .sf-footer__navigation a {
+    font-size: 14px;
+  }
+
+  .sf-footer__bottom {
+    padding-top: 24px;
+  }
+
+  .sf-footer__bottom p {
+    font-size: 12px;
+  }
+}
