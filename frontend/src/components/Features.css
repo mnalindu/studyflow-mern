@@ -1,0 +1,494 @@
+
+/* ===============================
+   StudyFlow Features Section
+================================ */
+
+.sf-features,
+.sf-features * {
+  box-sizing: border-box;
+}
+
+.sf-features {
+  width: 100%;
+  background: #fbfcf7;
+  font-family: "DM Sans", sans-serif;
+  color: #63874b;
+}
+
+.sf-features__container {
+  width: min(100% - 192px, 1536px);
+  margin: 0 auto;
+}
+
+/* Benefits Strip */
+
+.sf-benefits {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  min-height: 100px;
+  border-top: 1px solid #dfe7d5;
+  border-bottom: 1px solid #dfe7d5;
+}
+
+.sf-benefits__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-width: 0;
+  color: #729153;
+  font-size: 17px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sf-benefits__item svg {
+  flex: none;
+  color: #86a85f;
+}
+
+.sf-benefits__item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d1e1bf;
+}
+
+/* Section Introduction */
+
+.sf-features__intro {
+  max-width: 850px;
+  margin: 0 auto;
+  padding-top: 106px;
+  text-align: center;
+}
+
+.sf-features__eyebrow {
+  margin: 0 0 26px;
+  color: #79915e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2.2px;
+}
+
+.sf-features__intro h2 {
+  margin: 0;
+  color: #3d623e;
+  font-size: clamp(36px, 3.15vw, 52px);
+  font-weight: 800;
+  letter-spacing: -2.7px;
+  line-height: 1.23;
+}
+
+.sf-features__intro h2 span {
+  color: #88a76a;
+}
+
+.sf-features__description {
+  max-width: 635px;
+  margin: 24px auto 0;
+  color: #6d875e;
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+/* Three Feature Cards */
+
+.sf-features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 27px;
+  margin-top: 47px;
+}
+
+.sf-feature-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 480px;
+  padding: 35px 35px 33px;
+  border: 1px solid;
+  border-radius: 19px;
+}
+
+/* Green Card */
+
+.sf-feature-card--tasks {
+  background: #f6f9ef;
+  border-color: #dce8cf;
+  color: #65884f;
+}
+
+/* Blue Card */
+
+.sf-feature-card--focus {
+  background: #f2f7fb;
+  border-color: #dbe8f3;
+  color: #608cac;
+}
+
+/* Gold Card */
+
+.sf-feature-card--progress {
+  background: #fcf9f0;
+  border-color: #eee3c9;
+  color: #a1843e;
+}
+
+/* Icons */
+
+.sf-feature-card__icon {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: none;
+  place-items: center;
+  border-radius: 16px;
+}
+
+.sf-feature-card--tasks .sf-feature-card__icon {
+  background: #e3edd2;
+  color: #80a15c;
+}
+
+.sf-feature-card--focus .sf-feature-card__icon {
+  background: #e2edf4;
+  color: #78a2c0;
+}
+
+.sf-feature-card--progress .sf-feature-card__icon {
+  background: #f2e7c7;
+  color: #bc9b4f;
+}
+
+/* Card Headings */
+
+.sf-feature-card h3 {
+  margin: 31px 0 0;
+  color: inherit;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.35;
+}
+
+.sf-feature-card > p {
+  margin: 19px 0 0;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1.95;
+}
+
+/* ===============================
+   Task Preview
+================================ */
+
+.sf-feature-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: auto;
+  padding-top: 25px;
+}
+
+.sf-feature-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid #dce8cf;
+  border-radius: 9px;
+  background: #fff;
+  color: #8aa96b;
+  font-size: 11px;
+}
+
+.sf-feature-task__check {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  place-items: center;
+  border: 1px solid #d2e0bc;
+  border-radius: 4px;
+}
+
+.sf-feature-task__check.completed {
+  color: #8aab6a;
+}
+
+.sf-feature-task small {
+  margin-left: auto;
+  padding: 5px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.sf-task-high {
+  background: #f8edcf;
+  color: #bda05c;
+}
+
+.sf-task-today {
+  background: #edf4e3;
+  color: #90af72;
+}
+
+/* ===============================
+   Pomodoro Timer Preview
+================================ */
+
+.sf-feature-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 164px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.sf-feature-timer__time {
+  color: #89afcb;
+  font-size: clamp(54px, 4vw, 70px);
+  font-weight: 400;
+  letter-spacing: -3px;
+  line-height: 1.2;
+}
+
+.sf-feature-timer__caption {
+  margin-top: 10px;
+  color: #93b7d0;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* ===============================
+   Progress Chart Preview
+================================ */
+
+.sf-feature-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-evenly;
+  gap: 14px;
+  height: 151px;
+  margin-top: auto;
+  padding: 13px 12px 0;
+  border-bottom: 1px solid #eaddbb;
+}
+
+.sf-feature-chart__bar {
+  width: 29px;
+  max-width: 15%;
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  background: #e2d5a9;
+}
+
+.sf-feature-chart__bar--last {
+  background: #bea052;
+}
+
+/* ===============================
+   Feature Card Links
+================================ */
+
+.sf-feature-card__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 12px;
+  margin-top: 32px;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: gap .2s ease;
+}
+
+.sf-feature-card__link:hover {
+  gap: 18px;
+  text-decoration: underline;
+}
+
+/* ===============================
+   Extra Feature Items
+================================ */
+
+.sf-features__extras {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 45px;
+  margin-top: 43px;
+}
+
+.sf-features__extras > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #79945d;
+  font-size: 16px;
+}
+
+.sf-features__extras svg {
+  color: #789759;
+  flex: none;
+}
+
+.sf-features__divider {
+  height: 1px;
+  margin-top: 78px;
+  background: #dfe7d5;
+}
+
+/* ===============================
+   Laptop Responsive
+================================ */
+
+@media (max-width: 1300px) {
+  .sf-features__container {
+    width: calc(100% - 100px);
+  }
+
+  .sf-benefits__item {
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .sf-feature-card {
+    padding: 28px;
+  }
+
+  .sf-feature-card h3 {
+    font-size: 21px;
+  }
+}
+
+/* ===============================
+   Tablet Responsive
+================================ */
+
+@media (max-width: 950px) {
+  .sf-features__container {
+    width: calc(100% - 60px);
+  }
+
+  .sf-benefits {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 23px;
+    padding: 25px 0;
+  }
+
+  .sf-benefits__item::after {
+    display: none;
+  }
+
+  .sf-features__intro {
+    padding-top: 75px;
+  }
+
+  .sf-features__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .sf-feature-card {
+    min-height: 455px;
+  }
+
+  .sf-feature-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .sf-features__extras {
+    gap: 24px;
+  }
+}
+
+/* ===============================
+   Mobile Responsive
+================================ */
+
+@media (max-width: 620px) {
+  .sf-features__container {
+    width: calc(100% - 40px);
+  }
+
+  .sf-benefits {
+    gap: 20px 10px;
+  }
+
+  .sf-benefits__item {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .sf-features__intro {
+    padding-top: 68px;
+  }
+
+  .sf-features__eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+
+  .sf-features__intro h2 {
+    font-size: clamp(32px, 8vw, 43px);
+    letter-spacing: -1.5px;
+  }
+
+  .sf-features__description {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .sf-features__grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 35px;
+  }
+
+  .sf-feature-card,
+  .sf-feature-card:last-child {
+    grid-column: auto;
+    min-height: 450px;
+    padding: 28px;
+  }
+
+  .sf-feature-card h3 {
+    font-size: 23px;
+  }
+
+  .sf-feature-card > p {
+    font-size: 15px;
+  }
+
+  .sf-features__extras {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin: 35px 15px 0;
+  }
+
+  .sf-features__extras > div {
+    font-size: 14px;
+  }
+
+  .sf-features__divider {
+    margin-top: 55px;
+  }
+}
