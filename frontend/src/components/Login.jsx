@@ -103,7 +103,7 @@ function LoginPreview() {
 }
 
 // Left side branding panel
-function LoginStory() {
+export function LoginStory() {
   return (
     <aside className="sf-login__story">
       <div className="sf-login__story-inner">

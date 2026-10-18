@@ -9,16 +9,15 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-import Login, {
-  SignupComingSoon,
-} from "./components/Login";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 
 function App() {
   const [hash, setHash] = useState(
     () => window.location.hash || "#home"
   );
 
-  // Listen for changes in the URL hash
+  // Listen for URL hash changes
   useEffect(() => {
     const handleHashChange = () => {
       setHash(window.location.hash || "#home");
@@ -37,7 +36,7 @@ function App() {
     };
   }, []);
 
-  // Handle scrolling when switching pages
+  // Handle page navigation and scrolling
   useEffect(() => {
     if (
       hash === "#login" ||
@@ -64,9 +63,9 @@ function App() {
     return <Login />;
   }
 
-  // Temporary Signup Page
+  // Signup Page
   if (hash === "#signup") {
-    return <SignupComingSoon />;
+    return <Signup />;
   }
 
   // Home Page
