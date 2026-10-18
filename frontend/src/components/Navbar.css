@@ -1,138 +1,367 @@
 
+/* ======================================
+   StudyFlow Navbar
+====================================== */
+
+.site-header,
+.site-header * {
+  box-sizing: border-box;
+}
+
 .site-header {
   position: relative;
   z-index: 100;
+  width: 100%;
   background: #fbfaf5;
+  font-family: "DM Sans", sans-serif;
 }
 
+/* Main Navbar */
+
 .navbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
   width: min(1700px, calc(100% - 48px));
   min-height: 104px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
 }
 
+/* ======================================
+   Logo
+====================================== */
+
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 13px;
+
   color: #315f40;
   font-size: 33px;
   font-weight: 800;
   letter-spacing: -1.7px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: #315f40;
 }
 
 .brand-icon {
-  height: 54px;
-  width: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+
+  border-radius: 15px;
   background: #315f40;
   color: #fff;
-  border-radius: 15px;
 }
 
 .brand-dot {
   color: #94b86e;
 }
 
+/* ======================================
+   Center Navigation
+====================================== */
+
 .nav-links {
+  position: absolute;
+  left: 50%;
   display: flex;
   align-items: center;
   gap: 40px;
-  position: absolute;
-  left: 50%;
+
   transform: translateX(-50%);
 }
 
-.nav-links a {
+.nav-links > a {
   color: #697d62;
   font-size: 16px;
   font-weight: 600;
   white-space: nowrap;
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.nav-links a:hover {
+.nav-links > a:hover {
   color: #315f40;
 }
 
-.dashboard-button {
-  background: #315f40;
-  color: #fff;
-  padding: 17px 23px;
-  border-radius: 12px;
+/* ======================================
+   Desktop Auth Buttons
+====================================== */
+
+.nav-auth {
   display: flex;
   align-items: center;
-  gap: 15px;
-  font-weight: 700;
-  font-size: 16px;
-  box-shadow: 0 6px 14px rgba(49, 95, 64, 0.08);
+  gap: 33px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
-.dashboard-button:hover {
-  background: #264d34;
+/* Sign In */
+
+.nav-signin {
+  color: #365d3e;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.nav-signin:hover {
+  color: #7b9a60;
+}
+
+/* Get Started */
+
+.nav-getstarted {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+
+  min-height: 56px;
+  padding: 0 24px;
+
+  border-radius: 12px;
+  background: #315f40;
+  color: #fff;
+
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+
+  box-shadow: 0 6px 14px rgba(49, 95, 64, 0.08);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-getstarted:hover {
+  background: #264d34;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.nav-getstarted svg {
+  flex-shrink: 0;
+}
+
+/* Hidden on Desktop */
 
 .menu-toggle,
-.mobile-dashboard {
+.mobile-auth {
   display: none;
 }
 
-@media (max-width: 900px) {
+/* ======================================
+   Tablet & Mobile Navigation
+====================================== */
+
+@media (max-width: 1050px) {
   .navbar {
     min-height: 82px;
   }
 
+  /* Logo */
+
   .brand {
     font-size: 25px;
+    letter-spacing: -1px;
   }
 
   .brand-icon {
     width: 44px;
     height: 44px;
+    border-radius: 12px;
   }
 
-  .dashboard-button {
+  .brand-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Hide Desktop Auth */
+
+  .nav-auth {
     display: none;
   }
 
+  /* Hamburger */
+
   .menu-toggle {
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 43px;
+    height: 43px;
+    margin-left: auto;
+    padding: 0;
+
     border: none;
+    border-radius: 10px;
     background: transparent;
     color: #315f40;
+
     cursor: pointer;
   }
+
+  .menu-toggle:hover {
+    background: #edf3e7;
+  }
+
+  .menu-toggle:focus-visible,
+  .nav-links a:focus-visible {
+    outline: 2px solid #8aaa6d;
+    outline-offset: 3px;
+  }
+
+  /* Mobile Dropdown */
 
   .nav-links {
     display: none;
     position: absolute;
-    top: 76px;
+
+    top: calc(100% - 3px);
     left: 0;
     right: 0;
-    transform: none;
-    background: #fbfaf5;
-    padding: 24px;
+
+    z-index: 200;
+    width: 100%;
+
+    padding: 25px;
+    border: 1px solid #e2e9d9;
     border-radius: 16px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+    background: #fbfaf5;
+
+    box-shadow: 0 15px 35px rgba(49, 95, 64, 0.1);
+
+    transform: none;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
+    align-items: stretch;
+    gap: 23px;
   }
 
   .nav-links.open {
     display: flex;
   }
 
-  .nav-links .mobile-dashboard {
+  .nav-links > a {
+    color: #59764f;
+    font-size: 16px;
+  }
+
+  .nav-links > a:hover {
+    color: #315f40;
+  }
+
+  /* Mobile Auth Buttons */
+
+  .mobile-auth {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    padding-top: 19px;
+    border-top: 1px solid #e3eadb;
+  }
+
+  .mobile-signin {
     display: flex;
     align-items: center;
-    gap: 10px;
+
+    min-height: 42px;
+
     color: #315f40;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .mobile-getstarted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    min-height: 51px;
+    padding: 0 20px;
+
+    border-radius: 11px;
+    background: #315f40;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: background 0.2s ease;
+  }
+
+  .mobile-getstarted:hover {
+    background: #264d34;
+    color: white;
+  }
+}
+
+/* ======================================
+   Small Mobile
+====================================== */
+
+@media (max-width: 480px) {
+  .navbar {
+    width: calc(100% - 36px);
+    min-height: 75px;
+  }
+
+  .brand {
+    gap: 10px;
+    font-size: 24px;
+  }
+
+  .brand-icon {
+    width: 41px;
+    height: 41px;
+    border-radius: 11px;
+  }
+
+  .nav-links {
+    padding: 22px;
+    gap: 21px;
+  }
+
+  .nav-links > a {
+    font-size: 15px;
+  }
+
+  .mobile-signin {
+    font-size: 15px;
+  }
+}
+
+/* Reduced Motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-getstarted,
+  .nav-signin,
+  .nav-links a,
+  .mobile-getstarted {
+    transition: none;
   }
 }
