@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 
 import "./Dashboard.css";
+import DashboardOverview from "./DashboardOverview";
 
 // Temporary sample name.
 // Later this will come from the logged-in user.
@@ -562,6 +563,8 @@ export default function Dashboard() {
           )}
 
           <DashboardWelcome showNotice={setNotice} />
+
+          <DashboardOverview showNotice={setNotice} />
 
           {/* More dashboard components will
               be added in the next steps. */}

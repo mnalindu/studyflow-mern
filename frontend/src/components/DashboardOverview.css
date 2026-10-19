@@ -1,0 +1,449 @@
+
+/* ======================================
+   StudyFlow Dashboard Overview
+====================================== */
+
+.sf-dash-overview,
+.sf-dash-overview * {
+  box-sizing: border-box;
+}
+
+.sf-dash-overview {
+  width: 100%;
+  margin-top: 22px;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ======================================
+   QUICK ACTIONS
+====================================== */
+
+.sf-dash-overview__quick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Individual Quick Action Card */
+
+.sf-dash-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 97px;
+  padding: 20px;
+
+  border: 1px solid #e1e9de;
+  border-radius: 14px;
+
+  background: #fff;
+  color: #587e47;
+
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sf-dash-quick-card:hover {
+  border-color: #c8dbbd;
+  box-shadow: 0 8px 20px rgba(44, 80, 54, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Card Icon */
+
+.sf-dash-quick-card__icon {
+  display: grid;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
+  place-items: center;
+  border-radius: 12px;
+}
+
+/* Green Icon */
+
+.sf-dash-quick-card--task .sf-dash-quick-card__icon {
+  background: #edf3e6;
+  color: #89a968;
+}
+
+/* Blue Icon */
+
+.sf-dash-quick-card--schedule .sf-dash-quick-card__icon {
+  background: #e8f0f7;
+  color: #82a5c0;
+}
+
+/* Gold Icon */
+
+.sf-dash-quick-card--note .sf-dash-quick-card__icon {
+  background: #fbefe2;
+  color: #c8a474;
+}
+
+/* Text */
+
+.sf-dash-quick-card__text {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sf-dash-quick-card__text strong {
+  color: #527947;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.sf-dash-quick-card__text small {
+  color: #8eaa78;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.sf-dash-quick-card__arrow {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #8eac74;
+}
+
+/* ======================================
+   STATISTICS SECTION
+====================================== */
+
+.sf-dash-overview__summary {
+  margin-top: 38px;
+}
+
+/* Heading */
+
+.sf-dash-overview__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  margin-bottom: 21px;
+}
+
+.sf-dash-overview__heading h2 {
+  margin: 0;
+  color: #3f683a;
+
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+/* Small Status */
+
+.sf-dash-overview__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #8ea77a;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sf-dash-overview__status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9ab780;
+}
+
+/* ======================================
+   STAT CARDS GRID
+====================================== */
+
+.sf-dash-overview__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 19px;
+}
+
+/* Individual Stat Card */
+
+.sf-dash-stat {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 190px;
+  padding: 24px 22px;
+
+  border: 1px solid #e1e9de;
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+/* Top Row */
+
+.sf-dash-stat__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+}
+
+.sf-dash-stat__top h3 {
+  margin: 0;
+
+  color: #799864;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Statistics Icons */
+
+.sf-dash-stat__icon {
+  display: grid;
+  width: 41px;
+  height: 41px;
+  flex: 0 0 41px;
+  place-items: center;
+
+  border-radius: 11px;
+}
+
+.sf-dash-stat--tasks .sf-dash-stat__icon {
+  background: #edf3e2;
+  color: #8dac6e;
+}
+
+.sf-dash-stat--focus .sf-dash-stat__icon {
+  background: #e8f1f8;
+  color: #86adc9;
+}
+
+.sf-dash-stat--streak .sf-dash-stat__icon {
+  background: #fbefe2;
+  color: #d3a678;
+}
+
+.sf-dash-stat--goal .sf-dash-stat__icon {
+  background: #f2ecf7;
+  color: #ad96c8;
+}
+
+/* Large Numbers */
+
+.sf-dash-stat__value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.sf-dash-stat__value strong {
+  color: #557e3d;
+  font-size: 43px;
+  font-weight: 800;
+  letter-spacing: -1.7px;
+  line-height: 1.1;
+}
+
+.sf-dash-stat__value span {
+  color: #9ab681;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Description */
+
+.sf-dash-stat__description {
+  margin: 15px 0 0;
+
+  color: #829d6f;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ======================================
+   LAPTOP RESPONSIVE
+====================================== */
+
+@media (max-width: 1250px) {
+  .sf-dash-overview__quick {
+    gap: 14px;
+  }
+
+  .sf-dash-quick-card {
+    padding: 16px;
+    gap: 11px;
+  }
+
+  .sf-dash-quick-card__text strong {
+    font-size: 14px;
+  }
+
+  .sf-dash-overview__stats {
+    gap: 13px;
+  }
+
+  .sf-dash-stat {
+    padding: 19px 16px;
+  }
+
+  .sf-dash-stat__top h3 {
+    font-size: 12px;
+  }
+
+  .sf-dash-stat__value strong {
+    font-size: 37px;
+  }
+}
+
+/* ======================================
+   TABLET RESPONSIVE
+====================================== */
+
+@media (max-width: 900px) {
+  .sf-dash-overview__quick {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-dash-overview__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+  }
+
+  .sf-dash-stat {
+    min-height: 178px;
+    padding: 23px;
+  }
+
+  .sf-dash-stat__top h3 {
+    font-size: 14px;
+  }
+}
+
+/* ======================================
+   MOBILE RESPONSIVE
+====================================== */
+
+@media (max-width: 620px) {
+  .sf-dash-overview {
+    margin-top: 19px;
+  }
+
+  .sf-dash-overview__quick {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sf-dash-quick-card {
+    min-height: 84px;
+    padding: 16px;
+  }
+
+  .sf-dash-quick-card__icon {
+    width: 43px;
+    height: 43px;
+    flex-basis: 43px;
+  }
+
+  .sf-dash-quick-card__text strong {
+    font-size: 15px;
+  }
+
+  .sf-dash-quick-card__text small {
+    font-size: 12px;
+  }
+
+  .sf-dash-overview__summary {
+    margin-top: 33px;
+  }
+
+  .sf-dash-overview__heading h2 {
+    font-size: 20px;
+  }
+
+  .sf-dash-overview__status {
+    font-size: 11px;
+  }
+
+  .sf-dash-overview__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+
+  .sf-dash-stat {
+    min-height: 165px;
+    padding: 16px 13px;
+  }
+
+  .sf-dash-stat__top {
+    align-items: flex-start;
+  }
+
+  .sf-dash-stat__top h3 {
+    font-size: 12px;
+  }
+
+  .sf-dash-stat__icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .sf-dash-stat__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sf-dash-stat__value strong {
+    font-size: 34px;
+  }
+
+  .sf-dash-stat__value span {
+    font-size: 12px;
+  }
+
+  .sf-dash-stat__description {
+    margin-top: 12px;
+    font-size: 11px;
+  }
+}
+
+/* Very Small Screens */
+
+@media (max-width: 360px) {
+  .sf-dash-overview__stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================
+   ACCESSIBILITY
+====================================== */
+
+.sf-dash-quick-card:focus-visible {
+  outline: 2px solid #83a66b;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-dash-quick-card {
+    transition: none;
+  }
+}
