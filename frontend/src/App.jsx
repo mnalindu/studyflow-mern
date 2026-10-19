@@ -11,22 +11,19 @@ import Footer from "./components/Footer";
 
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   const [hash, setHash] = useState(
     () => window.location.hash || "#home"
   );
 
-  // Listen for URL hash changes
   useEffect(() => {
     const handleHashChange = () => {
       setHash(window.location.hash || "#home");
     };
 
-    window.addEventListener(
-      "hashchange",
-      handleHashChange
-    );
+    window.addEventListener("hashchange", handleHashChange);
 
     return () => {
       window.removeEventListener(
@@ -36,13 +33,15 @@ function App() {
     };
   }, []);
 
-  // Handle page navigation and scrolling
   useEffect(() => {
-    if (
-      hash === "#login" ||
-      hash === "#signup" ||
-      hash === "#home"
-    ) {
+    const standalonePages = [
+      "#login",
+      "#signup",
+      "#dashboard",
+      "#home",
+    ];
+
+    if (standalonePages.includes(hash)) {
       window.scrollTo(0, 0);
       return;
     }
@@ -58,17 +57,18 @@ function App() {
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
-  // Login Page
   if (hash === "#login") {
     return <Login />;
   }
 
-  // Signup Page
   if (hash === "#signup") {
     return <Signup />;
   }
 
-  // Home Page
+  if (hash === "#dashboard") {
+    return <Dashboard />;
+  }
+
   return (
     <>
       <Navbar />
