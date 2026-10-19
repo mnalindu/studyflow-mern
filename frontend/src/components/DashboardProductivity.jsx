@@ -1,5 +1,10 @@
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import {
   ArrowRight,
   Check,
@@ -11,43 +16,9 @@ import {
   Maximize2,
 } from "lucide-react";
 
-import "./DashboardProductivity.css";
+import { useStudyTasks } from "./StudyTasksContext";
 
-// Temporary example tasks from the demo screenshot.
-const initialTasks = [
-  {
-    id: 1,
-    title: "Finish database assignment",
-    subject: "Computer Science",
-    due: "2026-10-14",
-    priority: "High",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Revise chapter 04: Integration",
-    subject: "Mathematics",
-    due: "2026-10-14",
-    priority: "Medium",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Read 20 pages of Atomic Habits",
-    subject: "Personal growth",
-    due: "2026-10-14",
-    priority: "Low",
-    completed: true,
-  },
-  {
-    id: 4,
-    title: "Prepare presentation outline",
-    subject: "Communication",
-    due: "2026-10-15",
-    priority: "Medium",
-    completed: false,
-  },
-];
+import "./DashboardProductivity.css";
 
 const filters = [
   { id: "all", label: "All" },
@@ -56,12 +27,19 @@ const filters = [
   { id: "high", label: "High priority" },
 ];
 
-// ----------------------------------
-// TASK MANAGER
-// ----------------------------------
+// =====================================
+// Task Manager
+// =====================================
 
-function TaskManager({ showNotice }) {
-  const [tasks, setTasks] = useState(initialTasks);
+function TaskManager() {
+  const {
+    tasks,
+    addTask,
+    toggleTask,
+    completedCount,
+    pendingCount,
+  } = useStudyTasks();
+
   const [filter, setFilter] = useState("all");
   const [adding, setAdding] = useState(false);
 
@@ -72,49 +50,35 @@ function TaskManager({ showNotice }) {
     due: "",
   });
 
-  const completedCount = tasks.filter(
-    (task) => task.completed
-  ).length;
-
-  const pendingCount = tasks.filter(
-    (task) => !task.completed
-  ).length;
-
   const filteredTasks = tasks.filter((task) => {
-    if (filter === "pending") return !task.completed;
-    if (filter === "completed") return task.completed;
-    if (filter === "high") return task.priority === "High";
+    if (filter === "pending") {
+      return !task.completed;
+    }
+
+    if (filter === "completed") {
+      return task.completed;
+    }
+
+    if (filter === "high") {
+      return task.priority === "High";
+    }
+
     return true;
   });
 
-  function toggleTask(id) {
-    setTasks((current) =>
-      current.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
-      )
-    );
-  }
-
-  function addTask(event) {
+  function handleAddTask(event) {
     event.preventDefault();
 
     const title = newTask.title.trim();
 
     if (!title) return;
 
-    setTasks((current) => [
-      ...current,
-      {
-        id: Date.now(),
-        title,
-        subject: newTask.subject.trim() || "General",
-        priority: newTask.priority,
-        due: newTask.due,
-        completed: false,
-      },
-    ]);
+    addTask({
+      title,
+      subject: newTask.subject.trim() || "General",
+      priority: newTask.priority,
+      due: newTask.due,
+    });
 
     setNewTask({
       title: "",
@@ -127,11 +91,16 @@ function TaskManager({ showNotice }) {
     setFilter("all");
   }
 
+  function goToMyTasks() {
+    window.location.hash = "#tasks";
+  }
+
   return (
     <section
       className="sf-productivity-card sf-productivity-tasks"
       aria-labelledby="sf-tasks-title"
     >
+      {/* Card Header */}
       <div className="sf-productivity-card__header">
         <div>
           <div className="sf-productivity-tasks__title-row">
@@ -144,17 +113,15 @@ function TaskManager({ showNotice }) {
             </span>
           </div>
 
-          <p>Prioritize. Focus. Check it off.</p>
+          <p>
+            Prioritize. Focus. Check it off.
+          </p>
         </div>
 
         <button
           type="button"
           className="sf-productivity-tasks__view"
-          onClick={() =>
-            showNotice(
-              "The full My tasks page is coming soon. You can manage your tasks here for now."
-            )
-          }
+          onClick={goToMyTasks}
         >
           View all
           <ArrowRight size={18} />
@@ -204,15 +171,21 @@ function TaskManager({ showNotice }) {
                 className="sf-productivity-task__checkbox"
                 checked={task.completed}
                 aria-label={`Mark ${task.title} as ${
-                  task.completed ? "incomplete" : "completed"
+                  task.completed
+                    ? "incomplete"
+                    : "completed"
                 }`}
-                onChange={() => toggleTask(task.id)}
+                onChange={() =>
+                  toggleTask(task.id)
+                }
               />
 
               <div className="sf-productivity-task__details">
                 <span
                   className={`sf-productivity-task__title ${
-                    task.completed ? "completed" : ""
+                    task.completed
+                      ? "completed"
+                      : ""
                   }`}
                 >
                   {task.title}
@@ -220,7 +193,9 @@ function TaskManager({ showNotice }) {
 
                 <span className="sf-productivity-task__meta">
                   <span className="sf-productivity-task__dot" />
+
                   {task.subject}
+
                   {task.due && (
                     <>
                       <span>·</span>
@@ -244,7 +219,7 @@ function TaskManager({ showNotice }) {
       {adding ? (
         <form
           className="sf-productivity-tasks__form"
-          onSubmit={addTask}
+          onSubmit={handleAddTask}
         >
           <label htmlFor="sf-new-task-title">
             New task
@@ -266,6 +241,7 @@ function TaskManager({ showNotice }) {
           />
 
           <div className="sf-productivity-tasks__form-grid">
+
             <input
               type="text"
               aria-label="Subject"
@@ -306,6 +282,7 @@ function TaskManager({ showNotice }) {
                 }))
               }
             />
+
           </div>
 
           <div className="sf-productivity-tasks__form-actions">
@@ -332,6 +309,7 @@ function TaskManager({ showNotice }) {
         </button>
       )}
 
+      {/* Task Count */}
       <p className="sf-productivity-tasks__footer">
         <Check size={16} />
         {completedCount} completed · {pendingCount} pending
@@ -340,9 +318,9 @@ function TaskManager({ showNotice }) {
   );
 }
 
-// ----------------------------------
-// FOCUS TIMER
-// ----------------------------------
+// =====================================
+// Focus Timer
+// =====================================
 
 const timerModes = {
   focus: {
@@ -361,21 +339,28 @@ const timerModes = {
 
 function FocusTimer({ showNotice }) {
   const [mode, setMode] = useState("focus");
-  const [remaining, setRemaining] = useState(25 * 60);
+  const [remaining, setRemaining] =
+    useState(timerModes.focus.duration);
+
   const [running, setRunning] = useState(false);
-  const [completedSessions, setCompletedSessions] =
-    useState(0);
+
+  const [
+    completedSessions,
+    setCompletedSessions,
+  ] = useState(0);
 
   const deadlineRef = useRef(null);
 
-  // Accurate countdown based on actual elapsed time
+  // Countdown
   useEffect(() => {
     if (!running) return;
 
     const interval = setInterval(() => {
       const seconds = Math.max(
         0,
-        Math.ceil((deadlineRef.current - Date.now()) / 1000)
+        Math.ceil(
+          (deadlineRef.current - Date.now()) / 1000
+        )
       );
 
       setRemaining(seconds);
@@ -384,14 +369,17 @@ function FocusTimer({ showNotice }) {
     return () => clearInterval(interval);
   }, [running]);
 
-  // Stop when the countdown reaches zero
+  // Session Completed
   useEffect(() => {
     if (remaining !== 0 || !running) return;
 
     setRunning(false);
+    deadlineRef.current = null;
 
     if (mode === "focus") {
-      setCompletedSessions((count) => count + 1);
+      setCompletedSessions(
+        (count) => count + 1
+      );
     }
   }, [remaining, running, mode]);
 
@@ -400,7 +388,9 @@ function FocusTimer({ showNotice }) {
     deadlineRef.current = null;
 
     setMode(nextMode);
-    setRemaining(timerModes[nextMode].duration);
+    setRemaining(
+      timerModes[nextMode].duration
+    );
   }
 
   function toggleTimer() {
@@ -416,6 +406,7 @@ function FocusTimer({ showNotice }) {
         : remaining;
 
     setRemaining(startingSeconds);
+
     deadlineRef.current =
       Date.now() + startingSeconds * 1000;
 
@@ -425,7 +416,10 @@ function FocusTimer({ showNotice }) {
   function resetTimer() {
     setRunning(false);
     deadlineRef.current = null;
-    setRemaining(timerModes[mode].duration);
+
+    setRemaining(
+      timerModes[mode].duration
+    );
   }
 
   function formatTime(seconds) {
@@ -445,6 +439,7 @@ function FocusTimer({ showNotice }) {
       className="sf-productivity-card sf-focus-card"
       aria-labelledby="sf-focus-title"
     >
+      {/* Heading */}
       <div className="sf-focus-card__heading">
         <h2 id="sf-focus-title">
           <Timer size={21} />
@@ -456,7 +451,7 @@ function FocusTimer({ showNotice }) {
           aria-label="Open full focus timer"
           onClick={() =>
             showNotice(
-              "The full-screen Focus Timer page will be added in an upcoming step."
+              "The full Focus Timer page will be added soon."
             )
           }
         >
@@ -464,7 +459,7 @@ function FocusTimer({ showNotice }) {
         </button>
       </div>
 
-      {/* Timer Mode Tabs */}
+      {/* Timer Modes */}
       <div
         className="sf-focus-card__modes"
         role="group"
@@ -473,15 +468,17 @@ function FocusTimer({ showNotice }) {
         {Object.entries(timerModes).map(
           ([key, value]) => (
             <button
-              key={key}
               type="button"
+              key={key}
               className={
                 mode === key
                   ? "sf-focus-card__mode active"
                   : "sf-focus-card__mode"
               }
               aria-pressed={mode === key}
-              onClick={() => changeMode(key)}
+              onClick={() =>
+                changeMode(key)
+              }
             >
               {value.label}
             </button>
@@ -509,9 +506,12 @@ function FocusTimer({ showNotice }) {
               cy="130"
               r="121"
               className="sf-focus-card__ring-progress"
-              strokeDasharray={2 * Math.PI * 121}
+              strokeDasharray={
+                2 * Math.PI * 121
+              }
               strokeDashoffset={
-                (2 * Math.PI * 121) * (1 - progress)
+                (2 * Math.PI * 121) *
+                (1 - progress)
               }
             />
           </svg>
@@ -536,7 +536,7 @@ function FocusTimer({ showNotice }) {
         </div>
       </div>
 
-      {/* Timer Controls */}
+      {/* Controls */}
       <div className="sf-focus-card__controls">
         <button
           type="button"
@@ -594,17 +594,20 @@ function FocusTimer({ showNotice }) {
   );
 }
 
-// ----------------------------------
-// MAIN PRODUCTIVITY SECTION
-// ----------------------------------
+// =====================================
+// Main Productivity Section
+// =====================================
 
 export default function DashboardProductivity({
   showNotice,
 }) {
   return (
     <div className="sf-dashboard-productivity">
-      <TaskManager showNotice={showNotice} />
-      <FocusTimer showNotice={showNotice} />
+      <TaskManager />
+
+      <FocusTimer
+        showNotice={showNotice}
+      />
     </div>
   );
 }

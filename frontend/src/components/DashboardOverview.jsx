@@ -10,43 +10,36 @@ import {
   Target,
 } from "lucide-react";
 
+import { useStudyTasks } from "./StudyTasksContext";
+
 import "./DashboardOverview.css";
 
-// Quick Action Cards
 const quickActions = [
   {
     title: "Add a task",
     subtitle: "Make a little plan",
     icon: Plus,
     type: "task",
-    message:
-      "Task creation will be available when we build the task manager.",
   },
   {
     title: "My schedule",
     subtitle: "Stay one step ahead",
     icon: CalendarDays,
     type: "schedule",
-    message:
-      "Your calendar and schedule will be added soon.",
   },
   {
     title: "Quick note",
     subtitle: "Catch a good idea",
     icon: NotebookPen,
     type: "note",
-    message:
-      "The Notes feature will be added in an upcoming step.",
   },
 ];
 
-// Temporary statistics matching the reference screenshot.
-// Later these will come from the database.
 const statistics = [
   {
     title: "Tasks completed",
-    value: "1",
-    unit: "/ 4",
+    value: "0",
+    unit: "/ 0",
     description: "Every check is a small win",
     icon: SquareCheck,
     type: "tasks",
@@ -77,8 +70,31 @@ const statistics = [
   },
 ];
 
-// Quick Action Component
+// =====================================
+// Quick Action Cards
+// =====================================
+
 function QuickActions({ showNotice }) {
+  function handleAction(type) {
+    if (type === "task") {
+      window.location.hash = "#tasks";
+      return;
+    }
+
+    if (type === "schedule") {
+      showNotice(
+        "Your full Calendar page will be added soon."
+      );
+      return;
+    }
+
+    if (type === "note") {
+      showNotice(
+        "The Notes page will be added soon."
+      );
+    }
+  }
+
   return (
     <section
       className="sf-dash-overview__quick"
@@ -92,10 +108,15 @@ function QuickActions({ showNotice }) {
             key={action.title}
             type="button"
             className={`sf-dash-quick-card sf-dash-quick-card--${action.type}`}
-            onClick={() => showNotice(action.message)}
+            onClick={() =>
+              handleAction(action.type)
+            }
           >
             <span className="sf-dash-quick-card__icon">
-              <Icon size={23} strokeWidth={1.8} />
+              <Icon
+                size={23}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span className="sf-dash-quick-card__text">
@@ -114,8 +135,30 @@ function QuickActions({ showNotice }) {
   );
 }
 
-// Statistics Component
+// =====================================
+// Statistics Cards
+// =====================================
+
 function StatisticsCards() {
+  const {
+    tasks,
+    completedCount,
+  } = useStudyTasks();
+
+  const currentStatistics = statistics.map(
+    (stat) => {
+      if (stat.type === "tasks") {
+        return {
+          ...stat,
+          value: String(completedCount),
+          unit: `/ ${tasks.length}`,
+        };
+      }
+
+      return stat;
+    }
+  );
+
   return (
     <section
       className="sf-dash-overview__summary"
@@ -128,12 +171,13 @@ function StatisticsCards() {
 
         <span className="sf-dash-overview__status">
           <span />
-          Your study snapshot
+          Updated as you go
         </span>
       </div>
 
+      {/* Statistics Grid */}
       <div className="sf-dash-overview__stats">
-        {statistics.map((stat) => {
+        {currentStatistics.map((stat) => {
           const Icon = stat.icon;
 
           return (
@@ -145,7 +189,10 @@ function StatisticsCards() {
                 <h3>{stat.title}</h3>
 
                 <span className="sf-dash-stat__icon">
-                  <Icon size={21} strokeWidth={1.8} />
+                  <Icon
+                    size={21}
+                    strokeWidth={1.8}
+                  />
                 </span>
               </div>
 
@@ -168,11 +215,18 @@ function StatisticsCards() {
   );
 }
 
-// Main Dashboard Overview Component
-export default function DashboardOverview({ showNotice }) {
+// =====================================
+// Main Overview
+// =====================================
+
+export default function DashboardOverview({
+  showNotice,
+}) {
   return (
     <div className="sf-dash-overview">
-      <QuickActions showNotice={showNotice} />
+      <QuickActions
+        showNotice={showNotice}
+      />
 
       <StatisticsCards />
     </div>

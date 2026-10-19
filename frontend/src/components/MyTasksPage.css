@@ -1,0 +1,463 @@
+
+/* StudyFlow — My Tasks Page */
+
+.sf-my-tasks,
+.sf-my-tasks * {
+  box-sizing: border-box;
+}
+
+.sf-my-tasks {
+  width: 100%;
+  font-family: "DM Sans", sans-serif;
+  color: #466d3f;
+}
+
+/* Page Heading */
+
+.sf-my-tasks__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 38px;
+}
+
+.sf-my-tasks__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  color: #829e68;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.sf-my-tasks__eyebrow svg {
+  color: #c3a166;
+}
+
+.sf-my-tasks__heading h1 {
+  margin: 0;
+  color: #365d35;
+  font-size: clamp(30px, 2.6vw, 43px);
+  font-weight: 800;
+  letter-spacing: -1.8px;
+  line-height: 1.2;
+}
+
+.sf-my-tasks__description {
+  margin: 18px 0 0;
+  color: #788f63;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.sf-my-tasks__add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  flex-shrink: 0;
+  min-height: 55px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 11px;
+  background: #3e6653;
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sf-my-tasks__add-button:hover {
+  background: #2e5341;
+}
+
+/* Main White Card */
+
+.sf-my-tasks__card {
+  min-height: 440px;
+  padding: 42px 32px 20px;
+  border: 1px solid #e0e9dc;
+  border-radius: 17px;
+  background: #fff;
+}
+
+/* Filters */
+
+.sf-my-tasks__filters {
+  display: flex;
+  align-items: center;
+  gap: 29px;
+  overflow-x: auto;
+  border-bottom: 1px solid #e6ecdf;
+}
+
+.sf-my-tasks__filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 55px;
+  padding: 0 0 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #809d6b;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.sf-my-tasks__filter:hover,
+.sf-my-tasks__filter.active {
+  color: #527a40;
+}
+
+.sf-my-tasks__filter.active {
+  border-bottom-color: #96b674;
+  font-weight: 700;
+}
+
+.sf-my-tasks__filter span {
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #edf3e6;
+  color: #8ca875;
+  font-size: 12px;
+}
+
+/* Task Rows */
+
+.sf-my-tasks__task {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 108px;
+  padding: 19px 0;
+  border-bottom: 1px solid #edf0e8;
+}
+
+.sf-my-tasks__task:last-child {
+  border-bottom: none;
+}
+
+.sf-my-tasks__checkbox {
+  appearance: none;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  margin: 0;
+  place-items: center;
+  border: 1px solid #d8e5cf;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+}
+
+.sf-my-tasks__checkbox:checked {
+  border-color: #abc58f;
+  background: #abc58f;
+}
+
+.sf-my-tasks__checkbox:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sf-my-tasks__task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sf-my-tasks__task-info h3 {
+  margin: 0 0 11px;
+  color: #426a3b;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.sf-my-tasks__task-info h3.sf-my-tasks__completed {
+  color: #a2b792;
+  text-decoration: line-through;
+}
+
+.sf-my-tasks__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #89a373;
+  font-size: 12px;
+}
+
+.sf-my-tasks__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b7cc9e;
+}
+
+.sf-my-tasks__priority {
+  flex-shrink: 0;
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.sf-my-tasks__priority--high {
+  background: #fcebe4;
+  color: #c4785a;
+}
+
+.sf-my-tasks__priority--medium {
+  background: #fcf3d8;
+  color: #a98b40;
+}
+
+.sf-my-tasks__priority--low {
+  background: #eaf2e0;
+  color: #7d9e60;
+}
+
+/* Delete Button */
+
+.sf-my-tasks__delete {
+  display: grid;
+  width: 32px;
+  height: 35px;
+  flex: 0 0 32px;
+  place-items: center;
+  margin-left: 6px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #89a775;
+  cursor: pointer;
+}
+
+.sf-my-tasks__delete:hover {
+  background: #fcebe4;
+  color: #bf765d;
+}
+
+/* Add Task Form */
+
+.sf-my-tasks__form {
+  margin-bottom: 25px;
+  padding: 26px;
+  border: 1px solid #dfe9d6;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.sf-my-tasks__form h2 {
+  margin: 0 0 20px;
+  color: #416b3b;
+  font-size: 21px;
+}
+
+.sf-my-tasks__form-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 19px;
+}
+
+.sf-my-tasks__form-fields > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.sf-my-tasks__form label {
+  color: #628149;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sf-my-tasks__form input,
+.sf-my-tasks__form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 47px;
+  padding: 10px 13px;
+  border: 1px solid #dce7d2;
+  border-radius: 9px;
+  background: white;
+  color: #426a3b;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.sf-my-tasks__form input:focus,
+.sf-my-tasks__form select:focus {
+  outline: 2px solid #a9c68e;
+  outline-offset: 1px;
+}
+
+.sf-my-tasks__form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.sf-my-tasks__form-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: #4c7545;
+  color: white;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sf-my-tasks__form-actions button:last-child {
+  background: #eef3e8;
+  color: #65834e;
+}
+
+/* Empty State */
+
+.sf-my-tasks__empty {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 260px;
+  gap: 12px;
+  color: #89a773;
+  text-align: center;
+}
+
+.sf-my-tasks__empty p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.sf-my-tasks__empty span {
+  font-size: 13px;
+}
+
+/* Footer */
+
+.sf-my-tasks__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 32px;
+  color: #92ac7e;
+  font-size: 12px;
+}
+
+.sf-my-tasks__footer span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .sf-my-tasks__heading h1 {
+    font-size: 35px;
+  }
+}
+
+@media (max-width: 620px) {
+  .sf-my-tasks__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 26px;
+  }
+
+  .sf-my-tasks__eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.3px;
+  }
+
+  .sf-my-tasks__heading h1 {
+    font-size: 31px;
+    letter-spacing: -1.1px;
+  }
+
+  .sf-my-tasks__description {
+    font-size: 14px;
+  }
+
+  .sf-my-tasks__add-button {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .sf-my-tasks__card {
+    min-height: 350px;
+    padding: 21px 16px;
+    border-radius: 13px;
+  }
+
+  .sf-my-tasks__filters {
+    gap: 18px;
+  }
+
+  .sf-my-tasks__filter {
+    font-size: 12px;
+  }
+
+  .sf-my-tasks__task {
+    gap: 10px;
+    min-height: 93px;
+  }
+
+  .sf-my-tasks__checkbox {
+    width: 21px;
+    height: 21px;
+    flex-basis: 21px;
+  }
+
+  .sf-my-tasks__task-info h3 {
+    font-size: 13px;
+  }
+
+  .sf-my-tasks__meta {
+    font-size: 10px;
+  }
+
+  .sf-my-tasks__priority {
+    padding: 6px;
+    font-size: 10px;
+  }
+
+  .sf-my-tasks__delete {
+    width: 25px;
+    flex-basis: 25px;
+    margin-left: 0;
+  }
+
+  .sf-my-tasks__form {
+    padding: 18px;
+  }
+
+  .sf-my-tasks__form-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .sf-my-tasks__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 11px;
+  }
+}

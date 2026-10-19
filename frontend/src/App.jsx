@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 
+// Home Page Components
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -9,21 +10,32 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
+// Authentication Pages
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+
+// Dashboard
 import Dashboard from "./components/Dashboard";
 
-function App() {
+// Shared Task Context
+import {
+  StudyTasksProvider,
+} from "./components/StudyTasksContext";
+
+function AppContent() {
   const [hash, setHash] = useState(
     () => window.location.hash || "#home"
   );
 
   useEffect(() => {
-    const handleHashChange = () => {
+    function handleHashChange() {
       setHash(window.location.hash || "#home");
-    };
+    }
 
-    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener(
+      "hashchange",
+      handleHashChange
+    );
 
     return () => {
       window.removeEventListener(
@@ -38,6 +50,7 @@ function App() {
       "#login",
       "#signup",
       "#dashboard",
+      "#tasks",
       "#home",
     ];
 
@@ -51,24 +64,38 @@ function App() {
     const frame = requestAnimationFrame(() => {
       document
         .getElementById(sectionId)
-        ?.scrollIntoView({ block: "start" });
+        ?.scrollIntoView({
+          block: "start",
+        });
     });
 
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
+  // Login Page
   if (hash === "#login") {
     return <Login />;
   }
 
+  // Signup Page
   if (hash === "#signup") {
     return <Signup />;
   }
 
-  if (hash === "#dashboard") {
-    return <Dashboard />;
+  // Dashboard and My Tasks
+  if (hash === "#dashboard" || hash === "#tasks") {
+    return (
+      <Dashboard
+        view={
+          hash === "#tasks"
+            ? "tasks"
+            : "dashboard"
+        }
+      />
+    );
   }
 
+  // Home Page
   return (
     <>
       <Navbar />
@@ -86,4 +113,11 @@ function App() {
   );
 }
 
-export default App;
+// IMPORTANT: Wrap the application with the provider
+export default function App() {
+  return (
+    <StudyTasksProvider>
+      <AppContent />
+    </StudyTasksProvider>
+  );
+}

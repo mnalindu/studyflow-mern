@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+
 import {
   Leaf,
   GraduationCap,
@@ -26,17 +27,18 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import "./Dashboard.css";
 import DashboardOverview from "./DashboardOverview";
 import DashboardProductivity from "./DashboardProductivity";
 import DashboardAnalytics from "./DashboardAnalytics";
 import DashboardFinishing from "./DashboardFinishing";
+import MyTasksPage from "./MyTasksPage";
 
-// Temporary sample name.
-// Later this will come from the logged-in user.
+import { useStudyTasks } from "./StudyTasksContext";
+
+import "./Dashboard.css";
+
 const studentName = "Alex";
 
-// Sidebar navigation
 const navigation = [
   {
     name: "Dashboard",
@@ -68,43 +70,62 @@ const navigation = [
   },
 ];
 
-// ------------------------------------
+// =====================================
 // Sidebar
-// ------------------------------------
+// =====================================
 
 function DashboardSidebar({
   mobileOpen,
   closeMobile,
   showNotice,
+  activePage,
 }) {
+  const { pendingCount } = useStudyTasks();
+
   function openSection(section) {
     closeMobile();
 
-    if (section !== "Dashboard") {
-      showNotice(
-        `${section} will be added in an upcoming development step.`
-      );
+    if (section === "Dashboard") {
+      window.location.hash = "#dashboard";
+      return;
     }
+
+    if (section === "My tasks") {
+      window.location.hash = "#tasks";
+      return;
+    }
+
+    showNotice(
+      `${section} will be added in an upcoming development step.`
+    );
   }
 
   return (
     <aside
       className={`sf-dash-sidebar ${
-        mobileOpen ? "sf-dash-sidebar--open" : ""
+        mobileOpen
+          ? "sf-dash-sidebar--open"
+          : ""
       }`}
     >
-      {/* Logo */}
+      {/* Brand */}
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
         onClick={closeMobile}
       >
         <span className="sf-dash-sidebar__logo">
-          <Leaf size={27} strokeWidth={1.8} />
+          <Leaf
+            size={27}
+            strokeWidth={1.8}
+          />
         </span>
 
         <span>
-          StudyFlow<span className="sf-dash-sidebar__dot">.</span>
+          StudyFlow
+          <span className="sf-dash-sidebar__dot">
+            .
+          </span>
         </span>
       </a>
 
@@ -113,7 +134,9 @@ function DashboardSidebar({
         type="button"
         className="sf-dash-sidebar__workspace"
         onClick={() =>
-          showNotice("Workspace settings will be added later.")
+          showNotice(
+            "Workspace settings will be available soon."
+          )
         }
       >
         <span className="sf-dash-sidebar__workspace-icon">
@@ -121,25 +144,30 @@ function DashboardSidebar({
         </span>
 
         <span className="sf-dash-sidebar__workspace-text">
-          <strong>{studentName}'s workspace</strong>
-          <small>Your learning headquarters</small>
+          <strong>
+            {studentName}'s workspace
+          </strong>
+
+          <small>
+            Your learning headquarters
+          </small>
         </span>
 
         <ChevronRight size={17} />
       </button>
 
-      {/* Navigation */}
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
+      {/* Navigation */}
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = item.name === "Dashboard";
+          const isActive = item.name === activePage;
 
           return (
             <button
@@ -150,16 +178,23 @@ function DashboardSidebar({
                   ? "sf-dash-sidebar__nav-item--active"
                   : ""
               }`}
-              onClick={() => openSection(item.name)}
-              aria-current={isActive ? "page" : undefined}
+              aria-current={
+                isActive ? "page" : undefined
+              }
+              onClick={() =>
+                openSection(item.name)
+              }
             >
-              <Icon size={21} strokeWidth={1.9} />
+              <Icon
+                size={21}
+                strokeWidth={1.9}
+              />
 
               <span>{item.name}</span>
 
               {item.name === "My tasks" && (
                 <span className="sf-dash-sidebar__count">
-                  3
+                  {pendingCount}
                 </span>
               )}
 
@@ -173,7 +208,7 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* Bottom links */}
+      {/* Bottom Navigation */}
       <div className="sf-dash-sidebar__bottom">
         <a
           href="#home"
@@ -188,7 +223,9 @@ function DashboardSidebar({
           type="button"
           className="sf-dash-sidebar__bottom-item"
           onClick={() =>
-            showNotice("Preferences will be added later.")
+            showNotice(
+              "Preferences will be available soon."
+            )
           }
         >
           <Settings size={21} />
@@ -199,11 +236,15 @@ function DashboardSidebar({
   );
 }
 
-// ------------------------------------
-// Top Header
-// ------------------------------------
+// =====================================
+// Dashboard Header
+// =====================================
 
-function DashboardHeader({ openMobile, showNotice }) {
+function DashboardHeader({
+  openMobile,
+  showNotice,
+  pageName,
+}) {
   const [search, setSearch] = useState("");
   const [notificationsOpen, setNotificationsOpen] =
     useState(false);
@@ -214,20 +255,20 @@ function DashboardHeader({ openMobile, showNotice }) {
 
     if (search.trim()) {
       showNotice(
-        "Task search will be connected when we build the task manager."
+        "Full task search will be connected in a later step."
       );
     }
   }
 
   return (
     <header className="sf-dash-header">
-
       <div className="sf-dash-header__left">
+
         <button
           type="button"
           className="sf-dash-header__mobile-menu"
-          onClick={openMobile}
           aria-label="Open sidebar"
+          onClick={openMobile}
         >
           <Menu size={23} />
         </button>
@@ -235,7 +276,7 @@ function DashboardHeader({ openMobile, showNotice }) {
         <div className="sf-dash-header__breadcrumb">
           <span>Workspace</span>
           <ChevronRight size={16} />
-          <strong>Dashboard</strong>
+          <strong>{pageName}</strong>
         </div>
       </div>
 
@@ -272,7 +313,9 @@ function DashboardHeader({ openMobile, showNotice }) {
             aria-label="Notifications"
             aria-expanded={notificationsOpen}
             onClick={() => {
-              setNotificationsOpen(!notificationsOpen);
+              setNotificationsOpen(
+                !notificationsOpen
+              );
               setProfileOpen(false);
             }}
           >
@@ -312,8 +355,13 @@ function DashboardHeader({ openMobile, showNotice }) {
           {profileOpen && (
             <div className="sf-dash-header__dropdown">
               <strong>{studentName}</strong>
-              <p>Account features are coming soon.</p>
-              <a href="#home">Back to website</a>
+              <p>
+                Account settings will be available soon.
+              </p>
+
+              <a href="#home">
+                Back to website
+              </a>
             </div>
           )}
         </div>
@@ -323,9 +371,9 @@ function DashboardHeader({ openMobile, showNotice }) {
   );
 }
 
-// ------------------------------------
+// =====================================
 // Welcome Banner Illustration
-// ------------------------------------
+// =====================================
 
 function WelcomeIllustration() {
   return (
@@ -343,7 +391,7 @@ function WelcomeIllustration() {
         ✧
       </span>
 
-      {/* Study planner */}
+      {/* Planner */}
       <div className="sf-dash-illustration__planner">
         <div className="sf-dash-illustration__planner-heading">
           <span />
@@ -394,25 +442,54 @@ function WelcomeIllustration() {
         <ArrowUpRight size={19} />
 
         <div>
-          <strong>Keep showing up</strong>
-          <small>Progress looks good on you</small>
+          <strong>
+            Keep showing up
+          </strong>
+
+          <small>
+            Progress looks good on you
+          </small>
         </div>
       </div>
     </div>
   );
 }
 
-// ------------------------------------
-// Welcome Section
-// ------------------------------------
+// =====================================
+// Dashboard Welcome Section
+// =====================================
 
 function DashboardWelcome({ showNotice }) {
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const today = new Date().toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+
+  function navigateToTasks() {
+    window.location.hash = "#tasks";
+  }
+
+  function goToFocus() {
+    const focus = document.querySelector(
+      ".sf-focus-card"
+    );
+
+    if (focus) {
+      focus.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    } else {
+      showNotice(
+        "Focus Timer is not available yet."
+      );
+    }
+  }
 
   return (
     <>
@@ -424,20 +501,20 @@ function DashboardWelcome({ showNotice }) {
               A GOOD DAY TO MAKE PROGRESS
             </p>
 
-            <h1>Welcome back, {studentName}.</h1>
+            <h1>
+              Welcome back, {studentName}.
+            </h1>
 
             <p className="sf-dash-welcome__description">
-              Here's what's happening with your studies
-              today. Let's make it count.
+              Here's what's happening with your
+              studies today. Let's make it count.
             </p>
           </div>
 
           <button
             type="button"
             className="sf-dash-welcome__add"
-            onClick={() =>
-              showNotice("Task creation is coming in Step 06.3.3.")
-            }
+            onClick={navigateToTasks}
           >
             <Plus size={20} />
             Add task
@@ -450,14 +527,15 @@ function DashboardWelcome({ showNotice }) {
             {today}
           </span>
 
-          <span>One focused session can change your day.</span>
+          <span>
+            One focused session can change your day.
+          </span>
         </div>
       </div>
 
       {/* Welcome Hero Banner */}
       <section className="sf-dash-banner">
         <div className="sf-dash-banner__copy">
-
           <p className="sf-dash-banner__eyebrow">
             <Sparkles size={14} />
             YOUR NEXT CHAPTER STARTS HERE
@@ -466,7 +544,9 @@ function DashboardWelcome({ showNotice }) {
           <h2>
             Less overwhelm.
             <br />
-            <span>More "I've got this."</span>
+            <span>
+              More "I've got this."
+            </span>
           </h2>
 
           <p className="sf-dash-banner__description">
@@ -479,11 +559,7 @@ function DashboardWelcome({ showNotice }) {
             <button
               type="button"
               className="sf-dash-banner__start"
-              onClick={() =>
-                showNotice(
-                  "The focus timer will be built in Step 06.3.3."
-                )
-              }
+              onClick={goToFocus}
             >
               <Play size={17} />
               Start focusing
@@ -492,11 +568,7 @@ function DashboardWelcome({ showNotice }) {
             <button
               type="button"
               className="sf-dash-banner__plan"
-              onClick={() =>
-                showNotice(
-                  "The task planner will be built in Step 06.3.3."
-                )
-              }
+              onClick={navigateToTasks}
             >
               Plan my day
               <ArrowRight size={18} />
@@ -515,39 +587,62 @@ function DashboardWelcome({ showNotice }) {
   );
 }
 
-// ------------------------------------
-// Main Dashboard
-// ------------------------------------
+// =====================================
+// Main Dashboard Layout
+// =====================================
 
-export default function Dashboard() {
+export default function Dashboard({
+  view = "dashboard",
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notice, setNotice] = useState("");
+
+  const isTasksPage = view === "tasks";
+
+  const pageName = isTasksPage
+    ? "My tasks"
+    : "Dashboard";
 
   return (
     <div className="sf-dashboard">
 
+      {/* Mobile Overlay */}
       {mobileOpen && (
         <button
           type="button"
           className="sf-dashboard__overlay"
           aria-label="Close sidebar"
-          onClick={() => setMobileOpen(false)}
+          onClick={() =>
+            setMobileOpen(false)
+          }
         />
       )}
 
+      {/* Sidebar */}
       <DashboardSidebar
         mobileOpen={mobileOpen}
-        closeMobile={() => setMobileOpen(false)}
+        closeMobile={() =>
+          setMobileOpen(false)
+        }
         showNotice={setNotice}
+        activePage={pageName}
       />
 
+      {/* Dashboard Main */}
       <div className="sf-dashboard__main">
+
+        {/* Top Header */}
         <DashboardHeader
-          openMobile={() => setMobileOpen(true)}
+          openMobile={() =>
+            setMobileOpen(true)
+          }
           showNotice={setNotice}
+          pageName={pageName}
         />
 
         <main className="sf-dashboard__content">
+
+          {/* Notice */}
           {notice && (
             <div
               className="sf-dashboard__notice"
@@ -557,7 +652,9 @@ export default function Dashboard() {
 
               <button
                 type="button"
-                onClick={() => setNotice("")}
+                onClick={() =>
+                  setNotice("")
+                }
                 aria-label="Dismiss message"
               >
                 <X size={18} />
@@ -565,18 +662,31 @@ export default function Dashboard() {
             </div>
           )}
 
-          <DashboardWelcome showNotice={setNotice} />
+          {/* Page Content */}
+          {isTasksPage ? (
+            <MyTasksPage />
+          ) : (
+            <>
+              <DashboardWelcome
+                showNotice={setNotice}
+              />
 
-          <DashboardOverview showNotice={setNotice} />
+              <DashboardOverview
+                showNotice={setNotice}
+              />
 
-          <DashboardProductivity showNotice={setNotice} />
+              <DashboardProductivity
+                showNotice={setNotice}
+              />
 
-          <DashboardAnalytics />
+              <DashboardAnalytics />
 
-          <DashboardFinishing showNotice={setNotice} />
+              <DashboardFinishing
+                showNotice={setNotice}
+              />
+            </>
+          )}
 
-          {/* More dashboard components will
-              be added in the next steps. */}
         </main>
       </div>
     </div>
