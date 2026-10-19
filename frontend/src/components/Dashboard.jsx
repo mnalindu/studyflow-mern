@@ -29,6 +29,7 @@ import {
 import "./Dashboard.css";
 import DashboardOverview from "./DashboardOverview";
 import DashboardProductivity from "./DashboardProductivity";
+import DashboardAnalytics from "./DashboardAnalytics";
 
 // Temporary sample name.
 // Later this will come from the logged-in user.
@@ -568,6 +569,8 @@ export default function Dashboard() {
           <DashboardOverview showNotice={setNotice} />
 
           <DashboardProductivity showNotice={setNotice} />
+
+          <DashboardAnalytics />
 
           {/* More dashboard components will
               be added in the next steps. */}
