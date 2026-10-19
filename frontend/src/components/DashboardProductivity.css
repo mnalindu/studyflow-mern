@@ -1,0 +1,697 @@
+
+/* ==================================
+   Dashboard Productivity Section
+================================== */
+
+.sf-dashboard-productivity,
+.sf-dashboard-productivity * {
+  box-sizing: border-box;
+}
+
+.sf-dashboard-productivity {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 26px;
+  width: 100%;
+  margin-top: 28px;
+  font-family: "DM Sans", sans-serif;
+}
+
+.sf-productivity-card {
+  min-width: 0;
+  min-height: 590px;
+  padding: 30px;
+  border: 1px solid #e0e8db;
+  border-radius: 16px;
+}
+
+/* ==================================
+   TASK CARD
+================================== */
+
+.sf-productivity-tasks {
+  background: #fff;
+}
+
+.sf-productivity-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sf-productivity-tasks__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sf-productivity-card h2 {
+  margin: 0;
+  color: #456e3d;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -.7px;
+}
+
+.sf-productivity-tasks__count {
+  display: grid;
+  min-width: 26px;
+  height: 27px;
+  padding: 0 6px;
+  place-items: center;
+  border-radius: 7px;
+  background: #edf3e5;
+  color: #8ca773;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sf-productivity-card__header p {
+  margin: 13px 0 0;
+  color: #7b9567;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sf-productivity-tasks__view {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 11px;
+  margin-top: 7px;
+  padding: 5px 0;
+  border: none;
+  background: transparent;
+  color: #719454;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sf-productivity-tasks__view:hover {
+  color: #315f40;
+}
+
+/* Filters */
+
+.sf-productivity-tasks__filters {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-top: 27px;
+  border-bottom: 1px solid #e7ecdf;
+  overflow-x: auto;
+}
+
+.sf-productivity-tasks__filter {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  min-height: 41px;
+  padding: 0 0 13px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #859f70;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sf-productivity-tasks__filter.active {
+  border-bottom-color: #93b474;
+  color: #547941;
+  font-weight: 700;
+}
+
+.sf-productivity-tasks__filter > span {
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #eef3e7;
+  color: #829e69;
+  font-size: 12px;
+}
+
+/* Task List */
+
+.sf-productivity-tasks__list {
+  min-height: 330px;
+}
+
+.sf-productivity-task {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 99px;
+  padding: 17px 0;
+  border-bottom: 1px solid #edf0e9;
+}
+
+.sf-productivity-task:last-child {
+  border-bottom: none;
+}
+
+.sf-productivity-task__checkbox {
+  appearance: none;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  margin: 0;
+  place-items: center;
+  border: 1px solid #d9e6ce;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+}
+
+.sf-productivity-task__checkbox:checked {
+  border-color: #a7c38b;
+  background: #a7c38b;
+}
+
+.sf-productivity-task__checkbox:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sf-productivity-task__details {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.sf-productivity-task__title {
+  color: #446c3c;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.sf-productivity-task__title.completed {
+  color: #a2b693;
+  text-decoration: line-through;
+}
+
+.sf-productivity-task__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #86a16f;
+  font-size: 12px;
+}
+
+.sf-productivity-task__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b7cc9e;
+}
+
+.sf-productivity-task__priority {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.sf-productivity-task__priority--high {
+  background: #fcebe4;
+  color: #c7795c;
+}
+
+.sf-productivity-task__priority--medium {
+  background: #fbf3d7;
+  color: #a98c40;
+}
+
+.sf-productivity-task__priority--low {
+  background: #eaf2e0;
+  color: #7b9c5d;
+}
+
+/* Add Task Button */
+
+.sf-productivity-tasks__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: #709452;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sf-productivity-tasks__add:hover {
+  color: #315f40;
+}
+
+.sf-productivity-tasks__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  color: #91aa79;
+  font-size: 12px;
+}
+
+/* New Task Form */
+
+.sf-productivity-tasks__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #dfe8d6;
+  border-radius: 12px;
+  background: #f8faf5;
+}
+
+.sf-productivity-tasks__form label {
+  color: #517b42;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sf-productivity-tasks__form input,
+.sf-productivity-tasks__form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #dbe7d0;
+  border-radius: 8px;
+  background: #fff;
+  color: #466c3d;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.sf-productivity-tasks__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 100px 145px;
+  gap: 9px;
+}
+
+.sf-productivity-tasks__form-actions {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.sf-productivity-tasks__form-actions button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #527943;
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sf-productivity-tasks__form-actions button:last-child {
+  background: #eaf0e2;
+  color: #64834e;
+}
+
+.sf-productivity-tasks__empty {
+  display: grid;
+  min-height: 230px;
+  place-items: center;
+  color: #9aaf88;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ==================================
+   FOCUS TIMER CARD
+================================== */
+
+.sf-focus-card {
+  background: #f9fbf5;
+}
+
+.sf-focus-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sf-focus-card__heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-focus-card__heading h2 svg {
+  color: #9bbb79;
+}
+
+.sf-focus-card__heading > button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: #83a46b;
+  cursor: pointer;
+}
+
+/* Timer Modes */
+
+.sf-focus-card__modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 30px;
+  padding: 5px;
+  border-radius: 11px;
+  background: #eef3e7;
+}
+
+.sf-focus-card__mode {
+  min-height: 45px;
+  padding: 7px 5px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #91aa7d;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sf-focus-card__mode.active {
+  background: white;
+  color: #5b8046;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(43, 72, 39, .04);
+}
+
+/* Timer Circle */
+
+.sf-focus-card__timer-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 29px 0 24px;
+}
+
+.sf-focus-card__circle {
+  position: relative;
+  display: grid;
+  width: 265px;
+  height: 265px;
+  place-items: center;
+}
+
+.sf-focus-card__progress-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.sf-focus-card__ring-track {
+  fill: none;
+  stroke: #e4ecd9;
+  stroke-width: 6;
+}
+
+.sf-focus-card__ring-progress {
+  fill: none;
+  stroke: #93b471;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset .25s linear;
+}
+
+.sf-focus-card__top-dot {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #a6c589;
+}
+
+.sf-focus-card__timer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 23px;
+  text-align: center;
+}
+
+.sf-focus-card__time {
+  color: #638b46;
+  font-size: clamp(52px, 4vw, 68px);
+  font-weight: 700;
+  letter-spacing: -3px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-focus-card__timer-content p {
+  max-width: 175px;
+  margin: 0;
+  color: #84a46a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* Timer Controls */
+
+.sf-focus-card__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+}
+
+.sf-focus-card__start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 0 30px;
+  border: none;
+  border-radius: 10px;
+  background: #749a55;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sf-focus-card__start:hover {
+  background: #5f8645;
+}
+
+.sf-focus-card__reset {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border: 1px solid #e1ead8;
+  border-radius: 10px;
+  background: #eef4e7;
+  color: #88a96d;
+  cursor: pointer;
+}
+
+.sf-focus-card__reset:hover {
+  background: #e4edd9;
+}
+
+/* Completed Sessions */
+
+.sf-focus-card__sessions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+  color: #7da05c;
+  font-size: 12px;
+}
+
+.sf-focus-card__dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sf-focus-card__dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e1ead7;
+}
+
+.sf-focus-card__dots span.active {
+  background: #93b675;
+}
+
+/* ==================================
+   RESPONSIVE
+================================== */
+
+@media (max-width: 1350px) {
+  .sf-dashboard-productivity {
+    gap: 17px;
+  }
+
+  .sf-productivity-card {
+    padding: 23px;
+  }
+
+  .sf-productivity-card h2 {
+    font-size: 19px;
+  }
+
+  .sf-productivity-tasks__filters {
+    gap: 17px;
+  }
+
+  .sf-productivity-tasks__filter {
+    font-size: 12px;
+  }
+
+  .sf-productivity-tasks__form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sf-productivity-tasks__form-grid input[type="date"] {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1050px) {
+  .sf-dashboard-productivity {
+    grid-template-columns: 1fr;
+  }
+
+  .sf-productivity-card {
+    min-height: auto;
+    padding: 28px;
+  }
+
+  .sf-focus-card {
+    padding-bottom: 40px;
+  }
+}
+
+@media (max-width: 620px) {
+  .sf-dashboard-productivity {
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .sf-productivity-card {
+    padding: 20px 16px;
+    border-radius: 13px;
+  }
+
+  .sf-productivity-card h2 {
+    font-size: 18px;
+  }
+
+  .sf-productivity-card__header p {
+    font-size: 12px;
+  }
+
+  .sf-productivity-tasks__view {
+    font-size: 12px;
+  }
+
+  .sf-productivity-tasks__filters {
+    gap: 17px;
+  }
+
+  .sf-productivity-tasks__filter {
+    font-size: 12px;
+  }
+
+  .sf-productivity-task {
+    gap: 10px;
+    min-height: 87px;
+  }
+
+  .sf-productivity-task__title {
+    font-size: 13px;
+  }
+
+  .sf-productivity-task__meta {
+    font-size: 10px;
+  }
+
+  .sf-productivity-task__priority {
+    padding: 6px;
+    font-size: 10px;
+  }
+
+  .sf-productivity-task__checkbox {
+    width: 21px;
+    height: 21px;
+    flex-basis: 21px;
+  }
+
+  .sf-productivity-tasks__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sf-productivity-tasks__form-grid input[type="date"] {
+    grid-column: auto;
+  }
+
+  .sf-focus-card__circle {
+    width: 245px;
+    height: 245px;
+  }
+
+  .sf-focus-card__time {
+    font-size: 58px;
+  }
+
+  .sf-focus-card__mode {
+    font-size: 11px;
+  }
+
+  .sf-focus-card__sessions {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-focus-card__ring-progress {
+    transition: none;
+  }
+}
