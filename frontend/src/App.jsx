@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 
-// Home Page Components
+// Home Page
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -10,14 +10,14 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-// Authentication Pages
+// Authentication
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
 // Dashboard
 import Dashboard from "./components/Dashboard";
 
-// Shared Task Context
+// Shared Tasks Provider
 import {
   StudyTasksProvider,
 } from "./components/StudyTasksContext";
@@ -51,6 +51,7 @@ function AppContent() {
       "#signup",
       "#dashboard",
       "#tasks",
+      "#focus",
       "#home",
     ];
 
@@ -64,38 +65,42 @@ function AppContent() {
     const frame = requestAnimationFrame(() => {
       document
         .getElementById(sectionId)
-        ?.scrollIntoView({
-          block: "start",
-        });
+        ?.scrollIntoView({ block: "start" });
     });
 
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
-  // Login Page
+  // Login
   if (hash === "#login") {
     return <Login />;
   }
 
-  // Signup Page
+  // Signup
   if (hash === "#signup") {
     return <Signup />;
   }
 
-  // Dashboard and My Tasks
-  if (hash === "#dashboard" || hash === "#tasks") {
-    return (
-      <Dashboard
-        view={
-          hash === "#tasks"
-            ? "tasks"
-            : "dashboard"
-        }
-      />
-    );
+  // Dashboard, My Tasks and Focus Timer
+  if (
+    hash === "#dashboard" ||
+    hash === "#tasks" ||
+    hash === "#focus"
+  ) {
+    let view = "dashboard";
+
+    if (hash === "#tasks") {
+      view = "tasks";
+    }
+
+    if (hash === "#focus") {
+      view = "focus";
+    }
+
+    return <Dashboard view={view} />;
   }
 
-  // Home Page
+  // Home
   return (
     <>
       <Navbar />
@@ -113,7 +118,7 @@ function AppContent() {
   );
 }
 
-// IMPORTANT: Wrap the application with the provider
+// Shared provider wraps the whole app
 export default function App() {
   return (
     <StudyTasksProvider>
