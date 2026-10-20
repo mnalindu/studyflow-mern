@@ -1,0 +1,641 @@
+
+/* =========================================
+   StudyFlow - Full Analytics Page
+========================================= */
+
+.sf-analytics-page,
+.sf-analytics-page * {
+  box-sizing: border-box;
+}
+
+.sf-analytics-page {
+  width: 100%;
+  min-width: 0;
+  color: #456d3d;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* =========================================
+   Page Heading
+========================================= */
+
+.sf-analytics-page__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: 37px;
+}
+
+.sf-analytics-page__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0 0 18px;
+
+  color: #829f69;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.sf-analytics-page__eyebrow svg {
+  color: #c5a36c;
+}
+
+.sf-analytics-page__heading h1 {
+  margin: 0;
+
+  color: #365c35;
+  font-size: clamp(31px, 2.6vw, 43px);
+  font-weight: 800;
+  letter-spacing: -1.8px;
+  line-height: 1.2;
+}
+
+.sf-analytics-page__description {
+  margin: 18px 0 0;
+
+  color: #788f64;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Add Task Button */
+
+.sf-analytics-page__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+
+  min-height: 55px;
+  padding: 0 24px;
+
+  border: none;
+  border-radius: 11px;
+
+  background: #3f6653;
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+
+  box-shadow: 0 5px 14px rgba(36, 70, 50, 0.07);
+}
+
+.sf-analytics-page__add:hover {
+  background: #2e5341;
+}
+
+/* =========================================
+   Statistics Grid
+========================================= */
+
+.sf-analytics-page__statistics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 19px;
+}
+
+/* Individual Stat Card */
+
+.sf-analytics-stat {
+  min-width: 0;
+  min-height: 188px;
+  padding: 24px 22px;
+
+  border: 1px solid #e1e9dc;
+  border-radius: 15px;
+  background: #fff;
+}
+
+/* Top Row */
+
+.sf-analytics-stat__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sf-analytics-stat__header h3 {
+  margin: 0;
+  color: #799965;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Statistic Icons */
+
+.sf-analytics-stat__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 11px;
+}
+
+.sf-analytics-stat--focus
+.sf-analytics-stat__icon {
+  background: #eef4e5;
+  color: #96b478;
+}
+
+.sf-analytics-stat--completion
+.sf-analytics-stat__icon {
+  background: #e8f1f8;
+  color: #87abc5;
+}
+
+.sf-analytics-stat--streak
+.sf-analytics-stat__icon {
+  background: #fbefe3;
+  color: #d0a575;
+}
+
+.sf-analytics-stat--sessions
+.sf-analytics-stat__icon {
+  background: #f2edf8;
+  color: #b09aca;
+}
+
+/* Large Numbers */
+
+.sf-analytics-stat__number {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sf-analytics-stat__number strong {
+  color: #557d3e;
+  font-size: 43px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+.sf-analytics-stat__number span {
+  color: #9bb682;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Descriptions */
+
+.sf-analytics-stat > p {
+  margin: 16px 0 0;
+  color: #7d9a67;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   Weekly Chart Card
+========================================= */
+
+.sf-analytics-page__chart-card {
+  width: 100%;
+  min-width: 0;
+  margin-top: 27px;
+  padding: 31px 30px 32px;
+
+  border: 1px solid #e1e9dc;
+  border-radius: 16px;
+  background: #fff;
+}
+
+/* Chart Header */
+
+.sf-analytics-page__chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.sf-analytics-page__chart-header h2 {
+  margin: 0;
+  color: #456d3c;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.sf-analytics-page__chart-header p {
+  margin: 13px 0 0;
+  color: #7c9768;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Week Selector */
+
+.sf-analytics-page__week-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+
+  min-height: 40px;
+  padding: 0 12px;
+
+  border: 1px solid #e4ecdc;
+  border-radius: 8px;
+  background: #fff;
+  color: #82a06d;
+
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sf-analytics-page__week-button:hover {
+  background: #f5f9ef;
+}
+
+/* Chart Legend */
+
+.sf-analytics-page__chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-top: 30px;
+  color: #8da979;
+  font-size: 12px;
+}
+
+.sf-analytics-page__chart-legend > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sf-analytics-page__chart-legend > span:last-child {
+  font-size: 11px;
+}
+
+.sf-analytics-page__legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #abc68f;
+}
+
+/* =========================================
+   Chart Area
+========================================= */
+
+.sf-analytics-page__chart {
+  display: grid;
+  grid-template-columns: 35px minmax(0, 1fr);
+  gap: 12px;
+
+  width: 100%;
+  height: 225px;
+  margin-top: 25px;
+}
+
+/* Y-Axis */
+
+.sf-analytics-page__y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  color: #8aa675;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Main Plot */
+
+.sf-analytics-page__plot {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Grid Lines */
+
+.sf-analytics-page__grid-lines {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.sf-analytics-page__grid-lines span {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #e8eee1;
+}
+
+/* Bar Columns */
+
+.sf-analytics-page__bars {
+  position: absolute;
+  inset: 0;
+
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(8px, 1.6vw, 20px);
+
+  padding: 0 9px;
+}
+
+.sf-analytics-page__bar-column {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Individual Bar */
+
+.sf-analytics-page__bar {
+  width: min(100%, 45px);
+  min-height: 2px;
+  border-radius: 6px 6px 0 0;
+  background: #dce7cf;
+
+  transition:
+    height 0.3s ease,
+    background 0.2s ease;
+}
+
+.sf-analytics-page__bar--highlight {
+  background: #abc492;
+}
+
+.sf-analytics-page__bar:hover {
+  background: #9cbb81;
+}
+
+/* X-Axis */
+
+.sf-analytics-page__x-axis {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(8px, 1.6vw, 20px);
+
+  margin-top: 13px;
+  margin-left: 47px;
+  padding: 0 9px;
+
+  color: #8aa676;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* =========================================
+   Informational Note
+========================================= */
+
+.sf-analytics-page__note {
+  margin: 25px 0 0;
+  color: #88a56f;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   Footer
+========================================= */
+
+.sf-analytics-page__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  margin-top: 35px;
+  color: #94ad80;
+  font-size: 12px;
+}
+
+.sf-analytics-page__footer > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* =========================================
+   Laptop
+========================================= */
+
+@media (max-width: 1350px) {
+  .sf-analytics-page__statistics {
+    gap: 14px;
+  }
+
+  .sf-analytics-stat {
+    padding: 20px 17px;
+  }
+
+  .sf-analytics-stat__header h3 {
+    font-size: 12px;
+  }
+
+  .sf-analytics-stat__number strong {
+    font-size: 38px;
+  }
+
+  .sf-analytics-page__chart-card {
+    padding: 26px;
+  }
+}
+
+/* =========================================
+   Tablet
+========================================= */
+
+@media (max-width: 950px) {
+  .sf-analytics-page__statistics {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .sf-analytics-stat {
+    min-height: 170px;
+    padding: 23px;
+  }
+
+  .sf-analytics-stat__header h3 {
+    font-size: 14px;
+  }
+
+  .sf-analytics-page__chart {
+    height: 205px;
+  }
+}
+
+/* =========================================
+   Mobile
+========================================= */
+
+@media (max-width: 620px) {
+  .sf-analytics-page__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 19px;
+    margin-bottom: 27px;
+  }
+
+  .sf-analytics-page__eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.1px;
+  }
+
+  .sf-analytics-page__heading h1 {
+    font-size: 31px;
+    letter-spacing: -1.1px;
+  }
+
+  .sf-analytics-page__description {
+    font-size: 14px;
+  }
+
+  .sf-analytics-page__add {
+    min-height: 47px;
+    font-size: 14px;
+  }
+
+  .sf-analytics-page__statistics {
+    gap: 11px;
+  }
+
+  .sf-analytics-stat {
+    min-height: 158px;
+    padding: 16px 13px;
+    border-radius: 12px;
+  }
+
+  .sf-analytics-stat__header {
+    align-items: flex-start;
+  }
+
+  .sf-analytics-stat__header h3 {
+    font-size: 11px;
+  }
+
+  .sf-analytics-stat__icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .sf-analytics-stat__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sf-analytics-stat__number strong {
+    font-size: 34px;
+  }
+
+  .sf-analytics-stat__number span {
+    font-size: 12px;
+  }
+
+  .sf-analytics-stat > p {
+    margin-top: 12px;
+    font-size: 11px;
+  }
+
+  .sf-analytics-page__chart-card {
+    margin-top: 19px;
+    padding: 21px 14px;
+    border-radius: 13px;
+  }
+
+  .sf-analytics-page__chart-header h2 {
+    font-size: 17px;
+  }
+
+  .sf-analytics-page__chart-header p {
+    font-size: 12px;
+  }
+
+  .sf-analytics-page__week-button {
+    gap: 5px;
+    min-height: 35px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .sf-analytics-page__chart-legend {
+    margin-top: 23px;
+    font-size: 11px;
+  }
+
+  .sf-analytics-page__chart {
+    grid-template-columns: 23px minmax(0, 1fr);
+    gap: 6px;
+    height: 170px;
+  }
+
+  .sf-analytics-page__y-axis {
+    font-size: 10px;
+  }
+
+  .sf-analytics-page__bars,
+  .sf-analytics-page__x-axis {
+    gap: 5px;
+    padding: 0 3px;
+  }
+
+  .sf-analytics-page__x-axis {
+    margin-left: 29px;
+    font-size: 10px;
+  }
+
+  .sf-analytics-page__bar {
+    border-radius: 4px 4px 0 0;
+  }
+
+  .sf-analytics-page__note {
+    font-size: 11px;
+  }
+
+  .sf-analytics-page__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 11px;
+  }
+}
+
+/* =========================================
+   Accessibility
+========================================= */
+
+.sf-analytics-page button:focus-visible {
+  outline: 2px solid #86a96b;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-analytics-page__bar {
+    transition: none;
+  }
+}

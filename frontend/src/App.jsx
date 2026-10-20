@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 
-// Home Page Components
+// Home Page
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -10,7 +10,7 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-// Authentication Pages
+// Authentication
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
@@ -27,10 +27,12 @@ function AppContent() {
     () => window.location.hash || "#home"
   );
 
-  // Listen for route changes
+  // Listen for navigation changes
   useEffect(() => {
     function handleHashChange() {
-      setHash(window.location.hash || "#home");
+      setHash(
+        window.location.hash || "#home"
+      );
     }
 
     window.addEventListener(
@@ -46,7 +48,7 @@ function AppContent() {
     };
   }, []);
 
-  // Handle scrolling after navigation
+  // Reset scroll for standalone pages
   useEffect(() => {
     const standalonePages = [
       "#home",
@@ -56,6 +58,7 @@ function AppContent() {
       "#tasks",
       "#focus",
       "#calendar",
+      "#analytics",
     ];
 
     if (standalonePages.includes(hash)) {
@@ -63,6 +66,7 @@ function AppContent() {
       return;
     }
 
+    // Scroll to Home Page sections
     const sectionId = hash.replace("#", "");
 
     const frame = requestAnimationFrame(() => {
@@ -86,12 +90,13 @@ function AppContent() {
     return <Signup />;
   }
 
-  // Workspace Pages
+  // Workspace Routes
   const workspaceRoutes = {
     "#dashboard": "dashboard",
     "#tasks": "tasks",
     "#focus": "focus",
     "#calendar": "calendar",
+    "#analytics": "analytics",
   };
 
   if (
@@ -125,8 +130,7 @@ function AppContent() {
   );
 }
 
-// IMPORTANT:
-// Keep the provider around the entire app.
+// Shared provider for task management
 export default function App() {
   return (
     <StudyTasksProvider>
