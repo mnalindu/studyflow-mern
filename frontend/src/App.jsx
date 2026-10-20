@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 
-// Home Page
+// Home Page Components
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -10,14 +10,14 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-// Authentication
+// Authentication Pages
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
-// Dashboard
+// Workspace
 import Dashboard from "./components/Dashboard";
 
-// Shared Tasks Provider
+// Shared Task Context
 import {
   StudyTasksProvider,
 } from "./components/StudyTasksContext";
@@ -27,6 +27,7 @@ function AppContent() {
     () => window.location.hash || "#home"
   );
 
+  // Listen for route changes
   useEffect(() => {
     function handleHashChange() {
       setHash(window.location.hash || "#home");
@@ -45,14 +46,16 @@ function AppContent() {
     };
   }, []);
 
+  // Handle scrolling after navigation
   useEffect(() => {
     const standalonePages = [
+      "#home",
       "#login",
       "#signup",
       "#dashboard",
       "#tasks",
       "#focus",
-      "#home",
+      "#calendar",
     ];
 
     if (standalonePages.includes(hash)) {
@@ -65,42 +68,46 @@ function AppContent() {
     const frame = requestAnimationFrame(() => {
       document
         .getElementById(sectionId)
-        ?.scrollIntoView({ block: "start" });
+        ?.scrollIntoView({
+          block: "start",
+        });
     });
 
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
-  // Login
+  // Login Page
   if (hash === "#login") {
     return <Login />;
   }
 
-  // Signup
+  // Signup Page
   if (hash === "#signup") {
     return <Signup />;
   }
 
-  // Dashboard, My Tasks and Focus Timer
+  // Workspace Pages
+  const workspaceRoutes = {
+    "#dashboard": "dashboard",
+    "#tasks": "tasks",
+    "#focus": "focus",
+    "#calendar": "calendar",
+  };
+
   if (
-    hash === "#dashboard" ||
-    hash === "#tasks" ||
-    hash === "#focus"
+    Object.prototype.hasOwnProperty.call(
+      workspaceRoutes,
+      hash
+    )
   ) {
-    let view = "dashboard";
-
-    if (hash === "#tasks") {
-      view = "tasks";
-    }
-
-    if (hash === "#focus") {
-      view = "focus";
-    }
-
-    return <Dashboard view={view} />;
+    return (
+      <Dashboard
+        view={workspaceRoutes[hash]}
+      />
+    );
   }
 
-  // Home
+  // Home Page
   return (
     <>
       <Navbar />
@@ -118,7 +125,8 @@ function AppContent() {
   );
 }
 
-// Shared provider wraps the whole app
+// IMPORTANT:
+// Keep the provider around the entire app.
 export default function App() {
   return (
     <StudyTasksProvider>

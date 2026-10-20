@@ -27,31 +27,71 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// Existing Dashboard components
 import DashboardOverview from "./DashboardOverview";
 import DashboardProductivity from "./DashboardProductivity";
 import DashboardAnalytics from "./DashboardAnalytics";
 import DashboardFinishing from "./DashboardFinishing";
+
+// Existing Workspace Pages
 import MyTasksPage from "./MyTasksPage";
 import FocusTimerPage from "./FocusTimerPage";
 
+// New Calendar Page
+import CalendarPage from "./CalendarPage";
+
+// Shared task data
 import { useStudyTasks } from "./StudyTasksContext";
+
 import "./Dashboard.css";
 
 const studentName = "Alex";
 
+// --------------------------------------
+// Sidebar Navigation
+// --------------------------------------
+
 const navigation = [
-  { name: "Dashboard", icon: LayoutDashboard },
-  { name: "My tasks", icon: SquareCheck },
-  { name: "Focus timer", icon: Timer },
-  { name: "Calendar", icon: CalendarDays },
-  { name: "Analytics", icon: BarChart3 },
-  { name: "Notes", icon: NotebookPen },
-  { name: "Study rooms", icon: Users },
+  {
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    route: "#dashboard",
+  },
+  {
+    name: "My tasks",
+    icon: SquareCheck,
+    route: "#tasks",
+  },
+  {
+    name: "Focus timer",
+    icon: Timer,
+    route: "#focus",
+  },
+  {
+    name: "Calendar",
+    icon: CalendarDays,
+    route: "#calendar",
+  },
+  {
+    name: "Analytics",
+    icon: BarChart3,
+    route: null,
+  },
+  {
+    name: "Notes",
+    icon: NotebookPen,
+    route: null,
+  },
+  {
+    name: "Study rooms",
+    icon: Users,
+    route: null,
+  },
 ];
 
-// ---------------------------------------
-// Sidebar
-// ---------------------------------------
+// --------------------------------------
+// Sidebar Component
+// --------------------------------------
 
 function DashboardSidebar({
   mobileOpen,
@@ -61,47 +101,45 @@ function DashboardSidebar({
 }) {
   const { pendingCount } = useStudyTasks();
 
-  function openSection(section) {
+  function openSection(item) {
     closeMobile();
 
-    if (section === "Dashboard") {
-      window.location.hash = "#dashboard";
-      return;
-    }
-
-    if (section === "My tasks") {
-      window.location.hash = "#tasks";
-      return;
-    }
-
-    if (section === "Focus timer") {
-      window.location.hash = "#focus";
+    if (item.route) {
+      window.location.hash = item.route;
       return;
     }
 
     showNotice(
-      `${section} will be added in an upcoming development step.`
+      `${item.name} will be added in an upcoming development step.`
     );
   }
 
   return (
     <aside
       className={`sf-dash-sidebar ${
-        mobileOpen ? "sf-dash-sidebar--open" : ""
+        mobileOpen
+          ? "sf-dash-sidebar--open"
+          : ""
       }`}
     >
+      {/* StudyFlow Logo */}
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
         onClick={closeMobile}
       >
         <span className="sf-dash-sidebar__logo">
-          <Leaf size={27} strokeWidth={1.8} />
+          <Leaf
+            size={27}
+            strokeWidth={1.8}
+          />
         </span>
 
         <span>
           StudyFlow
-          <span className="sf-dash-sidebar__dot">.</span>
+          <span className="sf-dash-sidebar__dot">
+            .
+          </span>
         </span>
       </a>
 
@@ -120,25 +158,33 @@ function DashboardSidebar({
         </span>
 
         <span className="sf-dash-sidebar__workspace-text">
-          <strong>{studentName}'s workspace</strong>
-          <small>Your learning headquarters</small>
+          <strong>
+            {studentName}'s workspace
+          </strong>
+
+          <small>
+            Your learning headquarters
+          </small>
         </span>
 
         <ChevronRight size={17} />
       </button>
 
+      {/* Section Label */}
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Items */}
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = item.name === activePage;
+
+          const isActive =
+            item.name === activePage;
 
           return (
             <button
@@ -152,18 +198,25 @@ function DashboardSidebar({
               aria-current={
                 isActive ? "page" : undefined
               }
-              onClick={() => openSection(item.name)}
+              onClick={() =>
+                openSection(item)
+              }
             >
-              <Icon size={21} strokeWidth={1.9} />
+              <Icon
+                size={21}
+                strokeWidth={1.9}
+              />
 
               <span>{item.name}</span>
 
+              {/* Pending Tasks Count */}
               {item.name === "My tasks" && (
                 <span className="sf-dash-sidebar__count">
                   {pendingCount}
                 </span>
               )}
 
+              {/* Study Rooms Badge */}
               {item.name === "Study rooms" && (
                 <span className="sf-dash-sidebar__new">
                   NEW
@@ -174,7 +227,7 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* Bottom */}
+      {/* Sidebar Bottom */}
       <div className="sf-dash-sidebar__bottom">
         <a
           href="#home"
@@ -202,9 +255,9 @@ function DashboardSidebar({
   );
 }
 
-// ---------------------------------------
-// Top Header
-// ---------------------------------------
+// --------------------------------------
+// Dashboard Top Bar
+// --------------------------------------
 
 function DashboardHeader({
   openMobile,
@@ -214,8 +267,7 @@ function DashboardHeader({
   const [search, setSearch] = useState("");
   const [notificationsOpen, setNotificationsOpen] =
     useState(false);
-  const [profileOpen, setProfileOpen] =
-    useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   function handleSearch(event) {
     event.preventDefault();
@@ -229,7 +281,10 @@ function DashboardHeader({
 
   return (
     <header className="sf-dash-header">
+
+      {/* Breadcrumb */}
       <div className="sf-dash-header__left">
+
         <button
           type="button"
           className="sf-dash-header__mobile-menu"
@@ -241,12 +296,17 @@ function DashboardHeader({
 
         <div className="sf-dash-header__breadcrumb">
           <span>Workspace</span>
+
           <ChevronRight size={16} />
+
           <strong>{pageName}</strong>
         </div>
       </div>
 
+      {/* Header Right */}
       <div className="sf-dash-header__right">
+
+        {/* Search */}
         <form
           className="sf-dash-header__search"
           onSubmit={handleSearch}
@@ -277,7 +337,9 @@ function DashboardHeader({
             aria-label="Notifications"
             aria-expanded={notificationsOpen}
             onClick={() => {
-              setNotificationsOpen(!notificationsOpen);
+              setNotificationsOpen(
+                (current) => !current
+              );
               setProfileOpen(false);
             }}
           >
@@ -292,14 +354,17 @@ function DashboardHeader({
           )}
         </div>
 
-        {/* Profile */}
+        {/* User Profile */}
         <div className="sf-dash-header__popup">
           <button
             type="button"
             className="sf-dash-header__profile"
             aria-expanded={profileOpen}
             onClick={() => {
-              setProfileOpen(!profileOpen);
+              setProfileOpen(
+                (current) => !current
+              );
+
               setNotificationsOpen(false);
             }}
           >
@@ -322,18 +387,21 @@ function DashboardHeader({
                 Account settings will be available soon.
               </p>
 
-              <a href="#home">Back to website</a>
+              <a href="#home">
+                Back to website
+              </a>
             </div>
           )}
         </div>
+
       </div>
     </header>
   );
 }
 
-// ---------------------------------------
+// --------------------------------------
 // Welcome Banner Illustration
-// ---------------------------------------
+// --------------------------------------
 
 function WelcomeIllustration() {
   return (
@@ -351,7 +419,9 @@ function WelcomeIllustration() {
         ✧
       </span>
 
+      {/* Planner */}
       <div className="sf-dash-illustration__planner">
+
         <div className="sf-dash-illustration__planner-heading">
           <span />
           MY STUDY PLAN
@@ -378,6 +448,7 @@ function WelcomeIllustration() {
         </div>
       </div>
 
+      {/* Books */}
       <div className="sf-dash-illustration__book sf-dash-illustration__book--one">
         little steps
       </div>
@@ -388,25 +459,34 @@ function WelcomeIllustration() {
 
       <div className="sf-dash-illustration__pencil" />
 
+      {/* Floating Note */}
       <div className="sf-dash-illustration__note">
         <Sparkles size={16} />
         In my focus era
       </div>
 
+      {/* Floating Progress */}
       <div className="sf-dash-illustration__progress">
         <ArrowUpRight size={19} />
+
         <div>
-          <strong>Keep showing up</strong>
-          <small>Progress looks good on you</small>
+          <strong>
+            Keep showing up
+          </strong>
+
+          <small>
+            Progress looks good on you
+          </small>
         </div>
       </div>
+
     </div>
   );
 }
 
-// ---------------------------------------
-// Dashboard Welcome
-// ---------------------------------------
+// --------------------------------------
+// Dashboard Welcome Section
+// --------------------------------------
 
 function DashboardWelcome() {
   const today = new Date().toLocaleDateString(
@@ -419,25 +499,22 @@ function DashboardWelcome() {
     }
   );
 
-  function goToTasks() {
-    window.location.hash = "#tasks";
-  }
-
-  function goToFocus() {
-    window.location.hash = "#focus";
-  }
-
   return (
     <>
+      {/* Welcome Heading */}
       <div className="sf-dash-welcome">
+
         <div className="sf-dash-welcome__heading">
           <div>
+
             <p className="sf-dash-welcome__eyebrow">
               <Sun size={17} />
               A GOOD DAY TO MAKE PROGRESS
             </p>
 
-            <h1>Welcome back, {studentName}.</h1>
+            <h1>
+              Welcome back, {studentName}.
+            </h1>
 
             <p className="sf-dash-welcome__description">
               Here's what's happening with your
@@ -448,13 +525,16 @@ function DashboardWelcome() {
           <button
             type="button"
             className="sf-dash-welcome__add"
-            onClick={goToTasks}
+            onClick={() => {
+              window.location.hash = "#tasks";
+            }}
           >
             <Plus size={20} />
             Add task
           </button>
         </div>
 
+        {/* Date Row */}
         <div className="sf-dash-welcome__date-row">
           <span>
             <CalendarDays size={16} />
@@ -465,10 +545,13 @@ function DashboardWelcome() {
             One focused session can change your day.
           </span>
         </div>
+
       </div>
 
+      {/* Welcome Banner */}
       <section className="sf-dash-banner">
         <div className="sf-dash-banner__copy">
+
           <p className="sf-dash-banner__eyebrow">
             <Sparkles size={14} />
             YOUR NEXT CHAPTER STARTS HERE
@@ -477,7 +560,9 @@ function DashboardWelcome() {
           <h2>
             Less overwhelm.
             <br />
-            <span>More "I've got this."</span>
+            <span>
+              More "I've got this."
+            </span>
           </h2>
 
           <p className="sf-dash-banner__description">
@@ -487,10 +572,13 @@ function DashboardWelcome() {
           </p>
 
           <div className="sf-dash-banner__actions">
+
             <button
               type="button"
               className="sf-dash-banner__start"
-              onClick={goToFocus}
+              onClick={() => {
+                window.location.hash = "#focus";
+              }}
             >
               <Play size={17} />
               Start focusing
@@ -499,7 +587,9 @@ function DashboardWelcome() {
             <button
               type="button"
               className="sf-dash-banner__plan"
-              onClick={goToTasks}
+              onClick={() => {
+                window.location.hash = "#tasks";
+              }}
             >
               Plan my day
               <ArrowRight size={18} />
@@ -510,6 +600,7 @@ function DashboardWelcome() {
             <Check size={16} />
             Your space. Your pace. Your progress.
           </p>
+
         </div>
 
         <WelcomeIllustration />
@@ -518,28 +609,33 @@ function DashboardWelcome() {
   );
 }
 
-// ---------------------------------------
+// --------------------------------------
 // Main Dashboard Layout
-// ---------------------------------------
+// --------------------------------------
 
 export default function Dashboard({
   view = "dashboard",
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [notice, setNotice] = useState("");
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
+
+  const [notice, setNotice] =
+    useState("");
 
   const pageNames = {
     dashboard: "Dashboard",
     tasks: "My tasks",
     focus: "Focus timer",
+    calendar: "Calendar",
   };
 
-  const pageName = pageNames[view] || "Dashboard";
+  const pageName =
+    pageNames[view] || "Dashboard";
 
   return (
     <div className="sf-dashboard">
 
-      {/* Mobile Overlay */}
+      {/* Mobile Sidebar Overlay */}
       {mobileOpen && (
         <button
           type="button"
@@ -557,8 +653,10 @@ export default function Dashboard({
         activePage={pageName}
       />
 
+      {/* Main Workspace */}
       <div className="sf-dashboard__main">
-        {/* Shared Top Bar */}
+
+        {/* Shared Header */}
         <DashboardHeader
           openMobile={() => setMobileOpen(true)}
           showNotice={setNotice}
@@ -566,6 +664,8 @@ export default function Dashboard({
         />
 
         <main className="sf-dashboard__content">
+
+          {/* Notices */}
           {notice && (
             <div
               className="sf-dashboard__notice"
@@ -583,11 +683,13 @@ export default function Dashboard({
             </div>
           )}
 
-          {/* Page Routing */}
+          {/* Page Content */}
           {view === "tasks" ? (
             <MyTasksPage />
           ) : view === "focus" ? (
             <FocusTimerPage />
+          ) : view === "calendar" ? (
+            <CalendarPage />
           ) : (
             <>
               <DashboardWelcome />
@@ -607,8 +709,10 @@ export default function Dashboard({
               />
             </>
           )}
+
         </main>
       </div>
+
     </div>
   );
 }
