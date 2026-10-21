@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 
 import { useStudyTasks } from "./StudyTasksContext";
-
 import "./DashboardOverview.css";
 
 const quickActions = [
@@ -71,7 +70,7 @@ const statistics = [
 ];
 
 // =====================================
-// Quick Action Cards
+// Quick Actions
 // =====================================
 
 function QuickActions({ showNotice }) {
@@ -82,17 +81,16 @@ function QuickActions({ showNotice }) {
     }
 
     if (type === "schedule") {
-      showNotice(
-        "Your full Calendar page will be added soon."
-      );
+      window.location.hash = "#calendar";
       return;
     }
 
     if (type === "note") {
-      showNotice(
-        "The Notes page will be added soon."
-      );
+      window.location.hash = "#notes";
+      return;
     }
+
+    showNotice("This feature will be available soon.");
   }
 
   return (
@@ -139,7 +137,9 @@ function QuickActions({ showNotice }) {
 // Statistics Cards
 // =====================================
 
-function StatisticsCards() {
+function StatisticsCards({
+  dailyGoalMinutes = 120,
+}) {
   const {
     tasks,
     completedCount,
@@ -152,6 +152,14 @@ function StatisticsCards() {
           ...stat,
           value: String(completedCount),
           unit: `/ ${tasks.length}`,
+        };
+      }
+
+      if (stat.type === "goal") {
+        return {
+          ...stat,
+          description:
+            `0 of ${dailyGoalMinutes} minutes completed`,
         };
       }
 
@@ -216,11 +224,12 @@ function StatisticsCards() {
 }
 
 // =====================================
-// Main Overview
+// Main Dashboard Overview
 // =====================================
 
 export default function DashboardOverview({
   showNotice,
+  dailyGoalMinutes = 120,
 }) {
   return (
     <div className="sf-dash-overview">
@@ -228,7 +237,9 @@ export default function DashboardOverview({
         showNotice={showNotice}
       />
 
-      <StatisticsCards />
+      <StatisticsCards
+        dailyGoalMinutes={dailyGoalMinutes}
+      />
     </div>
   );
 }

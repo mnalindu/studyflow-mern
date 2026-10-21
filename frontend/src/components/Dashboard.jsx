@@ -27,32 +27,50 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// =====================================
 // Dashboard Overview Components
+// =====================================
+
 import DashboardOverview from "./DashboardOverview";
 import DashboardProductivity from "./DashboardProductivity";
 import DashboardAnalytics from "./DashboardAnalytics";
 import DashboardFinishing from "./DashboardFinishing";
 
+// =====================================
 // Workspace Pages
+// =====================================
+
 import MyTasksPage from "./MyTasksPage";
 import FocusTimerPage from "./FocusTimerPage";
 import CalendarPage from "./CalendarPage";
 import AnalyticsPage from "./AnalyticsPage";
 import NotesPage from "./NotesPage";
-
-// NEW: Study Rooms Page
 import StudyRoomsPage from "./StudyRoomsPage";
 
-// Shared Task Context
+// =====================================
+// Preferences Modal
+// =====================================
+
+import PreferencesModal, {
+  getDailyStudyGoal,
+} from "./PreferencesModal";
+
+// =====================================
+// Shared Tasks Context
+// =====================================
+
 import { useStudyTasks } from "./StudyTasksContext";
 
-// Existing Dashboard Styles
+// =====================================
+// Dashboard Styles
+// =====================================
+
 import "./Dashboard.css";
 
 const studentName = "Alex";
 
 // =====================================
-// Sidebar Navigation
+// Sidebar Navigation Items
 // =====================================
 
 const navigation = [
@@ -94,28 +112,30 @@ const navigation = [
 ];
 
 // =====================================
-// Sidebar Component
+// Dashboard Sidebar
 // =====================================
 
 function DashboardSidebar({
   mobileOpen,
   closeMobile,
-  showNotice,
   activePage,
+  onOpenPreferences,
 }) {
   const { pendingCount } = useStudyTasks();
 
+  // Navigate between workspace pages
   function openSection(item) {
     closeMobile();
 
     if (item.route) {
       window.location.hash = item.route;
-      return;
     }
+  }
 
-    showNotice(
-      `${item.name} will be available soon.`
-    );
+  // Open Preferences Modal
+  function handlePreferences() {
+    closeMobile();
+    onOpenPreferences();
   }
 
   return (
@@ -126,7 +146,10 @@ function DashboardSidebar({
           : ""
       }`}
     >
-      {/* Logo */}
+      {/* =================================
+          StudyFlow Logo
+      ================================= */}
+
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
@@ -147,15 +170,14 @@ function DashboardSidebar({
         </span>
       </a>
 
-      {/* Workspace Card */}
+      {/* =================================
+          Workspace Card
+      ================================= */}
+
       <button
         type="button"
         className="sf-dash-sidebar__workspace"
-        onClick={() =>
-          showNotice(
-            "Workspace settings will be available soon."
-          )
-        }
+        onClick={handlePreferences}
       >
         <span className="sf-dash-sidebar__workspace-icon">
           <GraduationCap size={23} />
@@ -174,12 +196,18 @@ function DashboardSidebar({
         <ChevronRight size={17} />
       </button>
 
-      {/* Sidebar Section */}
+      {/* =================================
+          Workspace Section Label
+      ================================= */}
+
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
-      {/* Navigation Links */}
+      {/* =================================
+          Sidebar Navigation
+      ================================= */}
+
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
@@ -202,9 +230,7 @@ function DashboardSidebar({
               aria-current={
                 isActive ? "page" : undefined
               }
-              onClick={() =>
-                openSection(item)
-              }
+              onClick={() => openSection(item)}
             >
               <Icon
                 size={21}
@@ -213,14 +239,16 @@ function DashboardSidebar({
 
               <span>{item.name}</span>
 
-              {/* Pending Task Count */}
+              {/* Pending Tasks Count */}
+
               {item.name === "My tasks" && (
                 <span className="sf-dash-sidebar__count">
                   {pendingCount}
                 </span>
               )}
 
-              {/* Study Rooms NEW Badge */}
+              {/* Study Rooms Badge */}
+
               {item.name === "Study rooms" && (
                 <span className="sf-dash-sidebar__new">
                   NEW
@@ -231,8 +259,13 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* Sidebar Bottom Links */}
+      {/* =================================
+          Sidebar Bottom Navigation
+      ================================= */}
+
       <div className="sf-dash-sidebar__bottom">
+
+        {/* Back to Website */}
 
         <a
           href="#home"
@@ -243,14 +276,12 @@ function DashboardSidebar({
           Back to website
         </a>
 
+        {/* Preferences Button */}
+
         <button
           type="button"
           className="sf-dash-sidebar__bottom-item"
-          onClick={() =>
-            showNotice(
-              "Preferences will be available soon."
-            )
-          }
+          onClick={handlePreferences}
         >
           <Settings size={21} />
           Preferences
@@ -269,6 +300,7 @@ function DashboardHeader({
   openMobile,
   showNotice,
   pageName,
+  onOpenPreferences,
 }) {
   const [search, setSearch] = useState("");
 
@@ -277,26 +309,44 @@ function DashboardHeader({
     setNotificationsOpen,
   ] = useState(false);
 
-  const [profileOpen, setProfileOpen] =
-    useState(false);
+  // =====================================
+  // Search Handler
+  // =====================================
 
   function handleSearch(event) {
     event.preventDefault();
 
     if (search.trim()) {
       showNotice(
-        "Full task search will be connected in a later step."
+        "Full task search will be available soon."
       );
     }
+  }
+
+  // =====================================
+  // Profile Button Handler
+  // IMPORTANT: Opens Preferences directly
+  // =====================================
+
+  function handleProfileClick() {
+    // Close notification popup if open
+    setNotificationsOpen(false);
+
+    // Open Preferences Modal directly
+    onOpenPreferences();
   }
 
   return (
     <header className="sf-dash-header">
 
-      {/* Header Left */}
+      {/* =================================
+          Header Left
+      ================================= */}
+
       <div className="sf-dash-header__left">
 
-        {/* Mobile Sidebar Button */}
+        {/* Mobile Menu */}
+
         <button
           type="button"
           className="sf-dash-header__mobile-menu"
@@ -307,19 +357,32 @@ function DashboardHeader({
         </button>
 
         {/* Breadcrumb */}
+
         <div className="sf-dash-header__breadcrumb">
-          <span>Workspace</span>
+
+          <span>
+            Workspace
+          </span>
 
           <ChevronRight size={16} />
 
-          <strong>{pageName}</strong>
+          <strong>
+            {pageName}
+          </strong>
+
         </div>
       </div>
 
-      {/* Header Right */}
+      {/* =================================
+          Header Right
+      ================================= */}
+
       <div className="sf-dash-header__right">
 
-        {/* Search */}
+        {/* =================================
+            Search Bar
+        ================================= */}
+
         <form
           className="sf-dash-header__search"
           onSubmit={handleSearch}
@@ -342,7 +405,10 @@ function DashboardHeader({
           </span>
         </form>
 
-        {/* Notifications */}
+        {/* =================================
+            Notifications
+        ================================= */}
+
         <div className="sf-dash-header__popup">
 
           <button
@@ -350,69 +416,63 @@ function DashboardHeader({
             className="sf-dash-header__icon-button"
             aria-label="Notifications"
             aria-expanded={notificationsOpen}
-            onClick={() => {
+            onClick={() =>
               setNotificationsOpen(
                 (current) => !current
-              );
-
-              setProfileOpen(false);
-            }}
+              )
+            }
           >
             <Bell size={21} />
           </button>
 
           {notificationsOpen && (
             <div className="sf-dash-header__dropdown">
-              <strong>Notifications</strong>
+
+              <strong>
+                Notifications
+              </strong>
 
               <p>
                 No new notifications yet.
               </p>
+
             </div>
           )}
+
         </div>
 
-        {/* Profile */}
+        {/* =================================
+            USER PROFILE BUTTON
+            CLICK -> OPEN PREFERENCES MODAL
+        ================================= */}
+
         <div className="sf-dash-header__popup">
 
           <button
             type="button"
             className="sf-dash-header__profile"
-            aria-expanded={profileOpen}
-            onClick={() => {
-              setProfileOpen(
-                (current) => !current
-              );
-
-              setNotificationsOpen(false);
-            }}
+            aria-label="Open preferences"
+            aria-haspopup="dialog"
+            onClick={handleProfileClick}
           >
+            {/* Profile Avatar */}
+
             <span className="sf-dash-header__avatar">
               {studentName.charAt(0)}
             </span>
+
+            {/* Username */}
 
             <span className="sf-dash-header__username">
               {studentName}
             </span>
 
+            {/* Dropdown Arrow */}
+
             <ChevronDown size={16} />
+
           </button>
 
-          {profileOpen && (
-            <div className="sf-dash-header__dropdown">
-
-              <strong>{studentName}</strong>
-
-              <p>
-                Account settings will be available soon.
-              </p>
-
-              <a href="#home">
-                Back to website
-              </a>
-
-            </div>
-          )}
         </div>
 
       </div>
@@ -421,7 +481,7 @@ function DashboardHeader({
 }
 
 // =====================================
-// Dashboard Illustration
+// Dashboard Welcome Illustration
 // =====================================
 
 function WelcomeIllustration() {
@@ -440,7 +500,10 @@ function WelcomeIllustration() {
         ✧
       </span>
 
-      {/* Study Planner */}
+      {/* =================================
+          Study Planner
+      ================================= */}
+
       <div className="sf-dash-illustration__planner">
 
         <div className="sf-dash-illustration__planner-heading">
@@ -467,9 +530,13 @@ function WelcomeIllustration() {
           <span />
           <span />
         </div>
+
       </div>
 
-      {/* Books */}
+      {/* =================================
+          Books
+      ================================= */}
+
       <div className="sf-dash-illustration__book sf-dash-illustration__book--one">
         little steps
       </div>
@@ -478,17 +545,27 @@ function WelcomeIllustration() {
         BIG IDEAS
       </div>
 
-      {/* Pencil */}
+      {/* =================================
+          Pencil
+      ================================= */}
+
       <div className="sf-dash-illustration__pencil" />
 
-      {/* Decorative Note */}
+      {/* =================================
+          Floating Note
+      ================================= */}
+
       <div className="sf-dash-illustration__note">
         <Sparkles size={16} />
         In my focus era
       </div>
 
-      {/* Progress Label */}
+      {/* =================================
+          Progress Label
+      ================================= */}
+
       <div className="sf-dash-illustration__progress">
+
         <ArrowUpRight size={19} />
 
         <div>
@@ -500,7 +577,9 @@ function WelcomeIllustration() {
             Progress looks good on you
           </small>
         </div>
+
       </div>
+
     </div>
   );
 }
@@ -520,20 +599,26 @@ function DashboardWelcome() {
     }
   );
 
+  // Navigate to My Tasks
   function goToTasks() {
     window.location.hash = "#tasks";
   }
 
+  // Navigate to Focus Timer
   function goToFocus() {
     window.location.hash = "#focus";
   }
 
   return (
     <>
-      {/* Welcome Heading */}
+      {/* =================================
+          Welcome Heading
+      ================================= */}
+
       <div className="sf-dash-welcome">
 
         <div className="sf-dash-welcome__heading">
+
           <div>
 
             <p className="sf-dash-welcome__eyebrow">
@@ -552,6 +637,8 @@ function DashboardWelcome() {
 
           </div>
 
+          {/* Add Task Button */}
+
           <button
             type="button"
             className="sf-dash-welcome__add"
@@ -560,9 +647,13 @@ function DashboardWelcome() {
             <Plus size={20} />
             Add task
           </button>
+
         </div>
 
-        {/* Current Date */}
+        {/* =================================
+            Current Date
+        ================================= */}
+
         <div className="sf-dash-welcome__date-row">
 
           <span>
@@ -575,9 +666,13 @@ function DashboardWelcome() {
           </span>
 
         </div>
+
       </div>
 
-      {/* Welcome Banner */}
+      {/* =================================
+          Dashboard Welcome Banner
+      ================================= */}
+
       <section className="sf-dash-banner">
 
         <div className="sf-dash-banner__copy">
@@ -601,6 +696,8 @@ function DashboardWelcome() {
             and let's get started.
           </p>
 
+          {/* Action Buttons */}
+
           <div className="sf-dash-banner__actions">
 
             <button
@@ -623,6 +720,8 @@ function DashboardWelcome() {
 
           </div>
 
+          {/* Reassurance Text */}
+
           <p className="sf-dash-banner__reassurance">
             <Check size={16} />
             Your space. Your pace. Your progress.
@@ -631,25 +730,55 @@ function DashboardWelcome() {
         </div>
 
         <WelcomeIllustration />
+
       </section>
     </>
   );
 }
 
 // =====================================
-// Main Dashboard / Workspace
+// Main Dashboard Component
 // =====================================
 
 export default function Dashboard({
   view = "dashboard",
 }) {
+  // =====================================
+  // Sidebar State
+  // =====================================
+
   const [mobileOpen, setMobileOpen] =
     useState(false);
+
+  // =====================================
+  // Notification State
+  // =====================================
 
   const [notice, setNotice] =
     useState("");
 
+  // =====================================
+  // Preferences Modal State
+  // =====================================
+
+  const [
+    preferencesOpen,
+    setPreferencesOpen,
+  ] = useState(false);
+
+  // =====================================
+  // Daily Study Goal State
+  // =====================================
+
+  const [
+    dailyGoalMinutes,
+    setDailyGoalMinutes,
+  ] = useState(getDailyStudyGoal);
+
+  // =====================================
   // Workspace Page Names
+  // =====================================
+
   const pageNames = {
     dashboard: "Dashboard",
     tasks: "My tasks",
@@ -663,10 +792,47 @@ export default function Dashboard({
   const pageName =
     pageNames[view] || "Dashboard";
 
+  // =====================================
+  // Open Preferences Modal
+  // =====================================
+
+  function handleOpenPreferences() {
+    setMobileOpen(false);
+    setPreferencesOpen(true);
+  }
+
+  // =====================================
+  // Close Preferences Modal
+  // =====================================
+
+  function handleClosePreferences() {
+    setPreferencesOpen(false);
+  }
+
+  // =====================================
+  // Save Preferences
+  // =====================================
+
+  function handleSavedPreferences(goal) {
+    // Update daily goal
+    setDailyGoalMinutes(goal);
+
+    // Close modal
+    setPreferencesOpen(false);
+
+    // Show confirmation
+    setNotice(
+      `Preferences saved. Your daily study goal is ${goal} minutes.`
+    );
+  }
+
   return (
     <div className="sf-dashboard">
 
-      {/* Mobile Overlay */}
+      {/* =================================
+          Mobile Sidebar Overlay
+      ================================= */}
+
       {mobileOpen && (
         <button
           type="button"
@@ -678,37 +844,52 @@ export default function Dashboard({
         />
       )}
 
-      {/* Shared Sidebar */}
+      {/* =================================
+          Shared Sidebar
+      ================================= */}
+
       <DashboardSidebar
         mobileOpen={mobileOpen}
         closeMobile={() =>
           setMobileOpen(false)
         }
-        showNotice={setNotice}
         activePage={pageName}
+        onOpenPreferences={handleOpenPreferences}
       />
 
-      {/* Workspace Main */}
+      {/* =================================
+          Main Workspace
+      ================================= */}
+
       <div className="sf-dashboard__main">
 
-        {/* Shared Top Header */}
+        {/* Top Header */}
+
         <DashboardHeader
           openMobile={() =>
             setMobileOpen(true)
           }
           showNotice={setNotice}
           pageName={pageName}
+          onOpenPreferences={handleOpenPreferences}
         />
+
+        {/* =================================
+            Page Content
+        ================================= */}
 
         <main className="sf-dashboard__content">
 
-          {/* Notification */}
+          {/* Notice */}
+
           {notice && (
             <div
               className="sf-dashboard__notice"
               role="status"
             >
-              <span>{notice}</span>
+              <span>
+                {notice}
+              </span>
 
               <button
                 type="button"
@@ -719,45 +900,87 @@ export default function Dashboard({
               >
                 <X size={18} />
               </button>
+
             </div>
           )}
 
-          {/* Workspace Routing */}
+          {/* =================================
+              Workspace Routing
+          ================================= */}
+
           {view === "tasks" ? (
+
             <MyTasksPage />
+
           ) : view === "focus" ? (
+
             <FocusTimerPage />
+
           ) : view === "calendar" ? (
+
             <CalendarPage />
+
           ) : view === "analytics" ? (
+
             <AnalyticsPage />
+
           ) : view === "notes" ? (
+
             <NotesPage />
+
           ) : view === "rooms" ? (
+
             <StudyRoomsPage />
+
           ) : (
+
             <>
-              {/* Dashboard Overview */}
+              {/* Dashboard Welcome */}
+
               <DashboardWelcome />
+
+              {/* Quick Actions + Statistics */}
 
               <DashboardOverview
                 showNotice={setNotice}
+                dailyGoalMinutes={dailyGoalMinutes}
               />
+
+              {/* Tasks + Focus Timer */}
 
               <DashboardProductivity
                 showNotice={setNotice}
               />
 
+              {/* Weekly Analytics */}
+
               <DashboardAnalytics />
+
+              {/* Final Dashboard Sections */}
 
               <DashboardFinishing
                 showNotice={setNotice}
               />
             </>
+
           )}
 
         </main>
+
       </div>
+
+      {/* =================================
+          Preferences Modal
+          Both profile and sidebar open this
+      ================================= */}
+
+      {preferencesOpen && (
+        <PreferencesModal
+          studentName={studentName}
+          onClose={handleClosePreferences}
+          onSaved={handleSavedPreferences}
+        />
+      )}
 
     </div>
   );
