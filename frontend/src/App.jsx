@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 
-// Home Page
+// Home Page Components
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -10,7 +10,7 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-// Authentication
+// Authentication Pages
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
@@ -27,7 +27,10 @@ function AppContent() {
     () => window.location.hash || "#home"
   );
 
-  // Listen for navigation changes
+  // -----------------------------------
+  // Listen for route changes
+  // -----------------------------------
+
   useEffect(() => {
     function handleHashChange() {
       setHash(
@@ -48,7 +51,10 @@ function AppContent() {
     };
   }, []);
 
-  // Reset scroll for standalone pages
+  // -----------------------------------
+  // Scroll handling
+  // -----------------------------------
+
   useEffect(() => {
     const standalonePages = [
       "#home",
@@ -59,6 +65,7 @@ function AppContent() {
       "#focus",
       "#calendar",
       "#analytics",
+      "#notes",
     ];
 
     if (standalonePages.includes(hash)) {
@@ -66,7 +73,6 @@ function AppContent() {
       return;
     }
 
-    // Scroll to Home Page sections
     const sectionId = hash.replace("#", "");
 
     const frame = requestAnimationFrame(() => {
@@ -80,23 +86,33 @@ function AppContent() {
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
-  // Login Page
+  // -----------------------------------
+  // Login
+  // -----------------------------------
+
   if (hash === "#login") {
     return <Login />;
   }
 
-  // Signup Page
+  // -----------------------------------
+  // Signup
+  // -----------------------------------
+
   if (hash === "#signup") {
     return <Signup />;
   }
 
+  // -----------------------------------
   // Workspace Routes
+  // -----------------------------------
+
   const workspaceRoutes = {
     "#dashboard": "dashboard",
     "#tasks": "tasks",
     "#focus": "focus",
     "#calendar": "calendar",
     "#analytics": "analytics",
+    "#notes": "notes",
   };
 
   if (
@@ -112,7 +128,10 @@ function AppContent() {
     );
   }
 
+  // -----------------------------------
   // Home Page
+  // -----------------------------------
+
   return (
     <>
       <Navbar />
@@ -130,7 +149,10 @@ function AppContent() {
   );
 }
 
-// Shared provider for task management
+// -----------------------------------
+// Shared Provider
+// -----------------------------------
+
 export default function App() {
   return (
     <StudyTasksProvider>
