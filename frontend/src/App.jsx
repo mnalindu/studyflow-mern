@@ -10,7 +10,7 @@ import FAQs from "./components/FAQs";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 
-// Authentication Pages
+// Authentication
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
@@ -27,10 +27,7 @@ function AppContent() {
     () => window.location.hash || "#home"
   );
 
-  // -----------------------------------
-  // Listen for route changes
-  // -----------------------------------
-
+  // Listen for navigation changes
   useEffect(() => {
     function handleHashChange() {
       setHash(
@@ -51,10 +48,7 @@ function AppContent() {
     };
   }, []);
 
-  // -----------------------------------
   // Scroll handling
-  // -----------------------------------
-
   useEffect(() => {
     const standalonePages = [
       "#home",
@@ -66,6 +60,7 @@ function AppContent() {
       "#calendar",
       "#analytics",
       "#notes",
+      "#study-rooms",
     ];
 
     if (standalonePages.includes(hash)) {
@@ -73,6 +68,7 @@ function AppContent() {
       return;
     }
 
+    // Home Page anchor navigation
     const sectionId = hash.replace("#", "");
 
     const frame = requestAnimationFrame(() => {
@@ -86,26 +82,17 @@ function AppContent() {
     return () => cancelAnimationFrame(frame);
   }, [hash]);
 
-  // -----------------------------------
   // Login
-  // -----------------------------------
-
   if (hash === "#login") {
     return <Login />;
   }
 
-  // -----------------------------------
   // Signup
-  // -----------------------------------
-
   if (hash === "#signup") {
     return <Signup />;
   }
 
-  // -----------------------------------
   // Workspace Routes
-  // -----------------------------------
-
   const workspaceRoutes = {
     "#dashboard": "dashboard",
     "#tasks": "tasks",
@@ -113,6 +100,7 @@ function AppContent() {
     "#calendar": "calendar",
     "#analytics": "analytics",
     "#notes": "notes",
+    "#study-rooms": "rooms",
   };
 
   if (
@@ -128,10 +116,7 @@ function AppContent() {
     );
   }
 
-  // -----------------------------------
   // Home Page
-  // -----------------------------------
-
   return (
     <>
       <Navbar />
@@ -149,10 +134,8 @@ function AppContent() {
   );
 }
 
-// -----------------------------------
-// Shared Provider
-// -----------------------------------
-
+// IMPORTANT:
+// Shared provider must wrap all pages
 export default function App() {
   return (
     <StudyTasksProvider>

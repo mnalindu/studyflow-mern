@@ -27,7 +27,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// Dashboard Components
+// Dashboard Overview Components
 import DashboardOverview from "./DashboardOverview";
 import DashboardProductivity from "./DashboardProductivity";
 import DashboardAnalytics from "./DashboardAnalytics";
@@ -40,16 +40,20 @@ import CalendarPage from "./CalendarPage";
 import AnalyticsPage from "./AnalyticsPage";
 import NotesPage from "./NotesPage";
 
+// NEW: Study Rooms Page
+import StudyRoomsPage from "./StudyRoomsPage";
+
 // Shared Task Context
 import { useStudyTasks } from "./StudyTasksContext";
 
+// Existing Dashboard Styles
 import "./Dashboard.css";
 
 const studentName = "Alex";
 
-// ======================================
+// =====================================
 // Sidebar Navigation
-// ======================================
+// =====================================
 
 const navigation = [
   {
@@ -85,13 +89,13 @@ const navigation = [
   {
     name: "Study rooms",
     icon: Users,
-    route: null,
+    route: "#study-rooms",
   },
 ];
 
-// ======================================
-// Sidebar
-// ======================================
+// =====================================
+// Sidebar Component
+// =====================================
 
 function DashboardSidebar({
   mobileOpen,
@@ -110,7 +114,7 @@ function DashboardSidebar({
     }
 
     showNotice(
-      `${item.name} will be added in an upcoming development step.`
+      `${item.name} will be available soon.`
     );
   }
 
@@ -122,7 +126,7 @@ function DashboardSidebar({
           : ""
       }`}
     >
-      {/* StudyFlow Logo */}
+      {/* Logo */}
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
@@ -170,12 +174,12 @@ function DashboardSidebar({
         <ChevronRight size={17} />
       </button>
 
-      {/* Section Label */}
+      {/* Sidebar Section */}
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Links */}
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
@@ -216,7 +220,7 @@ function DashboardSidebar({
                 </span>
               )}
 
-              {/* Study Rooms Badge */}
+              {/* Study Rooms NEW Badge */}
               {item.name === "Study rooms" && (
                 <span className="sf-dash-sidebar__new">
                   NEW
@@ -227,7 +231,7 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* Bottom Navigation */}
+      {/* Sidebar Bottom Links */}
       <div className="sf-dash-sidebar__bottom">
 
         <a
@@ -257,9 +261,9 @@ function DashboardSidebar({
   );
 }
 
-// ======================================
+// =====================================
 // Dashboard Top Header
-// ======================================
+// =====================================
 
 function DashboardHeader({
   openMobile,
@@ -292,6 +296,7 @@ function DashboardHeader({
       {/* Header Left */}
       <div className="sf-dash-header__left">
 
+        {/* Mobile Sidebar Button */}
         <button
           type="button"
           className="sf-dash-header__mobile-menu"
@@ -301,14 +306,13 @@ function DashboardHeader({
           <Menu size={23} />
         </button>
 
+        {/* Breadcrumb */}
         <div className="sf-dash-header__breadcrumb">
-
           <span>Workspace</span>
 
           <ChevronRight size={16} />
 
           <strong>{pageName}</strong>
-
         </div>
       </div>
 
@@ -366,10 +370,9 @@ function DashboardHeader({
               </p>
             </div>
           )}
-
         </div>
 
-        {/* User Profile */}
+        {/* Profile */}
         <div className="sf-dash-header__popup">
 
           <button
@@ -410,16 +413,16 @@ function DashboardHeader({
 
             </div>
           )}
-
         </div>
+
       </div>
     </header>
   );
 }
 
-// ======================================
-// Welcome Illustration
-// ======================================
+// =====================================
+// Dashboard Illustration
+// =====================================
 
 function WelcomeIllustration() {
   return (
@@ -464,7 +467,6 @@ function WelcomeIllustration() {
           <span />
           <span />
         </div>
-
       </div>
 
       {/* Books */}
@@ -479,13 +481,13 @@ function WelcomeIllustration() {
       {/* Pencil */}
       <div className="sf-dash-illustration__pencil" />
 
-      {/* Floating Note */}
+      {/* Decorative Note */}
       <div className="sf-dash-illustration__note">
         <Sparkles size={16} />
         In my focus era
       </div>
 
-      {/* Floating Progress */}
+      {/* Progress Label */}
       <div className="sf-dash-illustration__progress">
         <ArrowUpRight size={19} />
 
@@ -499,14 +501,13 @@ function WelcomeIllustration() {
           </small>
         </div>
       </div>
-
     </div>
   );
 }
 
-// ======================================
-// Dashboard Welcome
-// ======================================
+// =====================================
+// Dashboard Welcome Section
+// =====================================
 
 function DashboardWelcome() {
   const today = new Date().toLocaleDateString(
@@ -533,8 +534,8 @@ function DashboardWelcome() {
       <div className="sf-dash-welcome">
 
         <div className="sf-dash-welcome__heading">
-
           <div>
+
             <p className="sf-dash-welcome__eyebrow">
               <Sun size={17} />
               A GOOD DAY TO MAKE PROGRESS
@@ -548,9 +549,9 @@ function DashboardWelcome() {
               Here's what's happening with your
               studies today. Let's make it count.
             </p>
+
           </div>
 
-          {/* Add Task */}
           <button
             type="button"
             className="sf-dash-welcome__add"
@@ -559,7 +560,6 @@ function DashboardWelcome() {
             <Plus size={20} />
             Add task
           </button>
-
         </div>
 
         {/* Current Date */}
@@ -631,15 +631,14 @@ function DashboardWelcome() {
         </div>
 
         <WelcomeIllustration />
-
       </section>
     </>
   );
 }
 
-// ======================================
-// Main Dashboard
-// ======================================
+// =====================================
+// Main Dashboard / Workspace
+// =====================================
 
 export default function Dashboard({
   view = "dashboard",
@@ -650,7 +649,7 @@ export default function Dashboard({
   const [notice, setNotice] =
     useState("");
 
-  // Each workspace route has its own title
+  // Workspace Page Names
   const pageNames = {
     dashboard: "Dashboard",
     tasks: "My tasks",
@@ -658,6 +657,7 @@ export default function Dashboard({
     calendar: "Calendar",
     analytics: "Analytics",
     notes: "Notes",
+    rooms: "Study rooms",
   };
 
   const pageName =
@@ -666,7 +666,7 @@ export default function Dashboard({
   return (
     <div className="sf-dashboard">
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Overlay */}
       {mobileOpen && (
         <button
           type="button"
@@ -688,7 +688,7 @@ export default function Dashboard({
         activePage={pageName}
       />
 
-      {/* Main Workspace */}
+      {/* Workspace Main */}
       <div className="sf-dashboard__main">
 
         {/* Shared Top Header */}
@@ -702,7 +702,7 @@ export default function Dashboard({
 
         <main className="sf-dashboard__content">
 
-          {/* Notices */}
+          {/* Notification */}
           {notice && (
             <div
               className="sf-dashboard__notice"
@@ -719,11 +719,10 @@ export default function Dashboard({
               >
                 <X size={18} />
               </button>
-
             </div>
           )}
 
-          {/* Workspace Pages */}
+          {/* Workspace Routing */}
           {view === "tasks" ? (
             <MyTasksPage />
           ) : view === "focus" ? (
@@ -734,6 +733,8 @@ export default function Dashboard({
             <AnalyticsPage />
           ) : view === "notes" ? (
             <NotesPage />
+          ) : view === "rooms" ? (
+            <StudyRoomsPage />
           ) : (
             <>
               {/* Dashboard Overview */}
@@ -757,6 +758,7 @@ export default function Dashboard({
 
         </main>
       </div>
+
     </div>
   );
 }

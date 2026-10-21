@@ -1,0 +1,568 @@
+
+/* =========================================
+   StudyFlow - Study Rooms Page
+========================================= */
+
+.sf-study-rooms,
+.sf-study-rooms * {
+  box-sizing: border-box;
+}
+
+.sf-study-rooms {
+  width: 100%;
+  min-width: 0;
+  color: #466e3e;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* =========================================
+   Page Heading
+========================================= */
+
+.sf-study-rooms__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: 39px;
+}
+
+.sf-study-rooms__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  color: #829e69;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.sf-study-rooms__eyebrow svg {
+  color: #c4a36c;
+}
+
+.sf-study-rooms__heading h1 {
+  margin: 0;
+  color: #365d35;
+  font-size: clamp(32px, 2.6vw, 43px);
+  font-weight: 800;
+  letter-spacing: -1.7px;
+  line-height: 1.2;
+}
+
+.sf-study-rooms__description {
+  margin: 17px 0 0;
+  color: #788f64;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Add Task Button */
+
+.sf-study-rooms__add-task {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 55px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 11px;
+  background: #3e6653;
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(40, 76, 51, 0.07);
+}
+
+.sf-study-rooms__add-task:hover {
+  background: #2d5240;
+}
+
+/* =========================================
+   Introductory Banner
+========================================= */
+
+.sf-study-rooms__banner {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  min-height: 138px;
+  padding: 30px 32px;
+  border-radius: 15px;
+  background: #ecf3e4;
+}
+
+.sf-study-rooms__banner-icon {
+  display: grid;
+  width: 33px;
+  flex: 0 0 33px;
+  place-items: center;
+  color: #a3bd89;
+}
+
+.sf-study-rooms__banner-copy {
+  min-width: 0;
+}
+
+.sf-study-rooms__banner-copy h2 {
+  margin: 0;
+  color: #749852;
+  font-size: clamp(20px, 1.55vw, 25px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.45;
+}
+
+.sf-study-rooms__banner-copy p {
+  margin: 13px 0 0;
+  color: #779753;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   Study Room Cards Grid
+========================================= */
+
+.sf-study-rooms__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 27px;
+  margin-top: 38px;
+}
+
+/* Individual Room Card */
+
+.sf-room-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e1e9dc;
+  border-radius: 16px;
+  background: #fff;
+}
+
+/* Room Illustration Area */
+
+.sf-room-card__visual {
+  display: grid;
+  width: 100%;
+  height: 200px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eaf2dc;
+}
+
+.sf-room-card__emoji {
+  font-size: 55px;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Room Body */
+
+.sf-room-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sf-room-card__title {
+  margin: 30px 0 0;
+  color: #789b55;
+  font-size: clamp(20px, 1.55vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.65px;
+  line-height: 1.35;
+}
+
+.sf-room-card__description {
+  margin: 17px 0 0;
+  color: #789a59;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* Room Metadata */
+
+.sf-room-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 28px;
+  color: #7e9b60;
+  font-size: 13px;
+}
+
+/* Enter Room Button */
+
+.sf-room-card__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 25px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 10px;
+  background: #789c55;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 5px 11px rgba(75, 110, 54, 0.08);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sf-room-card__button:hover {
+  background: #668947;
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   Footer
+========================================= */
+
+.sf-study-rooms__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 34px;
+  color: #93ac80;
+  font-size: 12px;
+}
+
+.sf-study-rooms__footer > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* =========================================
+   Room Preview Modal
+========================================= */
+
+.sf-room-preview__overlay {
+  position: fixed;
+  z-index: 1500;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(21, 47, 38, 0.65);
+}
+
+.sf-room-preview {
+  width: min(100%, 530px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 27px;
+  border: 1px solid #dce8d3;
+  border-radius: 20px;
+  background: #fbfcf8;
+  box-shadow: 0 25px 90px rgba(12, 37, 24, 0.2);
+}
+
+.sf-room-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sf-room-preview__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #8eab77;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.sf-room-preview__close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: none;
+  border-radius: 9px;
+  background: #edf4e5;
+  color: #638748;
+  cursor: pointer;
+}
+
+.sf-room-preview__visual {
+  display: grid;
+  min-height: 170px;
+  place-items: center;
+  margin-top: 20px;
+  border-radius: 13px;
+  background: #eaf2dc;
+}
+
+.sf-room-preview__visual span {
+  font-size: 70px;
+}
+
+.sf-room-preview__content h2 {
+  margin: 25px 0 0;
+  color: #42683c;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.sf-room-preview__content > p {
+  margin: 12px 0 0;
+  color: #7a9866;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.sf-room-preview__session {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 22px;
+  color: #70924f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sf-room-preview__information {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-top: 22px;
+  padding: 19px;
+  border-radius: 12px;
+  background: #eff5e8;
+  color: #77945e;
+}
+
+.sf-room-preview__information svg {
+  flex-shrink: 0;
+}
+
+.sf-room-preview__information p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.sf-room-preview__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.sf-room-preview__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sf-room-preview__start {
+  flex: 1;
+  background: #749a54;
+  color: white;
+}
+
+.sf-room-preview__start:hover {
+  background: #5e8141;
+}
+
+.sf-room-preview__back {
+  background: #eaf1e3;
+  color: #66874f;
+}
+
+/* =========================================
+   Laptop Responsive
+========================================= */
+
+@media (max-width: 1300px) {
+  .sf-study-rooms__grid {
+    gap: 17px;
+  }
+
+  .sf-room-card {
+    padding: 20px;
+  }
+
+  .sf-room-card__visual {
+    height: 170px;
+  }
+
+  .sf-room-card__title {
+    font-size: 21px;
+  }
+
+  .sf-room-card__description {
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   Tablet Responsive
+========================================= */
+
+@media (max-width: 1000px) {
+  .sf-study-rooms__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sf-room-card__visual {
+    height: 180px;
+  }
+
+  .sf-study-rooms__banner {
+    min-height: 125px;
+  }
+}
+
+/* =========================================
+   Mobile Responsive
+========================================= */
+
+@media (max-width: 650px) {
+  .sf-study-rooms__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 21px;
+    margin-bottom: 26px;
+  }
+
+  .sf-study-rooms__eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+  }
+
+  .sf-study-rooms__heading h1 {
+    font-size: 32px;
+    letter-spacing: -1.1px;
+  }
+
+  .sf-study-rooms__description {
+    font-size: 14px;
+  }
+
+  .sf-study-rooms__add-task {
+    min-height: 47px;
+    font-size: 14px;
+  }
+
+  .sf-study-rooms__banner {
+    align-items: flex-start;
+    gap: 15px;
+    padding: 23px 19px;
+  }
+
+  .sf-study-rooms__banner-copy h2 {
+    font-size: 18px;
+  }
+
+  .sf-study-rooms__banner-copy p {
+    font-size: 12px;
+  }
+
+  .sf-study-rooms__grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .sf-room-card {
+    padding: 18px;
+    border-radius: 13px;
+  }
+
+  .sf-room-card__visual {
+    height: 165px;
+  }
+
+  .sf-room-card__emoji {
+    font-size: 50px;
+  }
+
+  .sf-room-card__title {
+    margin-top: 23px;
+    font-size: 21px;
+  }
+
+  .sf-room-card__description {
+    font-size: 14px;
+  }
+
+  .sf-room-card__meta {
+    font-size: 12px;
+  }
+
+  .sf-room-card__button {
+    min-height: 47px;
+    font-size: 13px;
+  }
+
+  .sf-study-rooms__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 11px;
+  }
+
+  .sf-room-preview {
+    padding: 19px;
+  }
+
+  .sf-room-preview__content h2 {
+    font-size: 22px;
+  }
+
+  .sf-room-preview__actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================================
+   Accessibility
+========================================= */
+
+.sf-study-rooms button:focus-visible {
+  outline: 2px solid #8fae72;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-room-card__button,
+  .sf-study-rooms__add-task {
+    transition: none;
+  }
+}
