@@ -25,6 +25,7 @@ import {
   Check,
   Plus,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 
 // =====================================
@@ -115,15 +116,16 @@ const navigation = [
 // Dashboard Sidebar
 // =====================================
 
+
 function DashboardSidebar({
   mobileOpen,
   closeMobile,
   activePage,
   onOpenPreferences,
+  onLogout,
 }) {
   const { pendingCount } = useStudyTasks();
 
-  // Navigate between workspace pages
   function openSection(item) {
     closeMobile();
 
@@ -132,7 +134,6 @@ function DashboardSidebar({
     }
   }
 
-  // Open Preferences Modal
   function handlePreferences() {
     closeMobile();
     onOpenPreferences();
@@ -141,39 +142,26 @@ function DashboardSidebar({
   return (
     <aside
       className={`sf-dash-sidebar ${
-        mobileOpen
-          ? "sf-dash-sidebar--open"
-          : ""
+        mobileOpen ? "sf-dash-sidebar--open" : ""
       }`}
     >
-      {/* =================================
-          StudyFlow Logo
-      ================================= */}
-
+      {/* Logo */}
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
         onClick={closeMobile}
       >
         <span className="sf-dash-sidebar__logo">
-          <Leaf
-            size={27}
-            strokeWidth={1.8}
-          />
+          <Leaf size={27} strokeWidth={1.8} />
         </span>
 
         <span>
           StudyFlow
-          <span className="sf-dash-sidebar__dot">
-            .
-          </span>
+          <span className="sf-dash-sidebar__dot">.</span>
         </span>
       </a>
 
-      {/* =================================
-          Workspace Card
-      ================================= */}
-
+      {/* Workspace Card */}
       <button
         type="button"
         className="sf-dash-sidebar__workspace"
@@ -184,39 +172,26 @@ function DashboardSidebar({
         </span>
 
         <span className="sf-dash-sidebar__workspace-text">
-          <strong>
-            {studentName}'s workspace
-          </strong>
-
-          <small>
-            Your learning headquarters
-          </small>
+          <strong>{studentName}'s workspace</strong>
+          <small>Your learning headquarters</small>
         </span>
 
         <ChevronRight size={17} />
       </button>
 
-      {/* =================================
-          Workspace Section Label
-      ================================= */}
-
+      {/* Section Title */}
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
-      {/* =================================
-          Sidebar Navigation
-      ================================= */}
-
+      {/* Navigation */}
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
-
-          const isActive =
-            item.name === activePage;
+          const isActive = item.name === activePage;
 
           return (
             <button
@@ -227,27 +202,17 @@ function DashboardSidebar({
                   ? "sf-dash-sidebar__nav-item--active"
                   : ""
               }`}
-              aria-current={
-                isActive ? "page" : undefined
-              }
+              aria-current={isActive ? "page" : undefined}
               onClick={() => openSection(item)}
             >
-              <Icon
-                size={21}
-                strokeWidth={1.9}
-              />
-
+              <Icon size={21} strokeWidth={1.9} />
               <span>{item.name}</span>
-
-              {/* Pending Tasks Count */}
 
               {item.name === "My tasks" && (
                 <span className="sf-dash-sidebar__count">
                   {pendingCount}
                 </span>
               )}
-
-              {/* Study Rooms Badge */}
 
               {item.name === "Study rooms" && (
                 <span className="sf-dash-sidebar__new">
@@ -259,14 +224,8 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* =================================
-          Sidebar Bottom Navigation
-      ================================= */}
-
+      {/* Bottom Navigation */}
       <div className="sf-dash-sidebar__bottom">
-
-        {/* Back to Website */}
-
         <a
           href="#home"
           className="sf-dash-sidebar__bottom-item"
@@ -276,8 +235,6 @@ function DashboardSidebar({
           Back to website
         </a>
 
-        {/* Preferences Button */}
-
         <button
           type="button"
           className="sf-dash-sidebar__bottom-item"
@@ -286,11 +243,33 @@ function DashboardSidebar({
           <Settings size={21} />
           Preferences
         </button>
+      </div>
 
+      {/* User Profile and Logout */}
+      <div className="sf-dash-sidebar__user">
+        <span className="sf-dash-sidebar__user-avatar">
+          {studentName.charAt(0)}
+        </span>
+
+        <div className="sf-dash-sidebar__user-details">
+          <strong>{studentName}</strong>
+          <small>Student </small>
+        </div>
+
+        <button
+          type="button"
+          className="sf-dash-sidebar__logout"
+          aria-label="Sign out"
+          title="Sign out"
+          onClick={onLogout}
+        >
+          <LogOut size={21} strokeWidth={1.8} />
+        </button>
       </div>
     </aside>
   );
 }
+
 
 // =====================================
 // Dashboard Top Header
@@ -809,6 +788,16 @@ export default function Dashboard({
     setPreferencesOpen(false);
   }
 
+  function handleLogout() {
+  setPreferencesOpen(false);
+  setMobileOpen(false);
+
+  // Frontend demo: navigate to the Login page.
+  // Real session invalidation will be added
+  // with the authentication backend.
+  window.location.hash = "#login";
+  }
+
   // =====================================
   // Save Preferences
   // =====================================
@@ -850,11 +839,10 @@ export default function Dashboard({
 
       <DashboardSidebar
         mobileOpen={mobileOpen}
-        closeMobile={() =>
-          setMobileOpen(false)
-        }
+        closeMobile={() => setMobileOpen(false)}
         activePage={pageName}
         onOpenPreferences={handleOpenPreferences}
+        onLogout={handleLogout}
       />
 
       {/* =================================

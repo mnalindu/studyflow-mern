@@ -1046,3 +1046,87 @@
     transition: none;
   }
 }
+
+/* =====================================
+   StudyFlow Sidebar User & Logout
+===================================== */
+
+.sf-dash-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+
+  margin: 15px 16px 0;
+  padding: 16px 0 18px;
+
+  border-top: 1px solid rgba(218, 235, 220, 0.12);
+}
+
+.sf-dash-sidebar__user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+
+  border: 3px solid #6d9179;
+  border-radius: 50%;
+
+  background: #eadfc7;
+  color: #9a8059;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.sf-dash-sidebar__user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  flex: 1;
+  min-width: 0;
+}
+
+.sf-dash-sidebar__user-details strong {
+  color: #edf5ef;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sf-dash-sidebar__user-details small {
+  color: #a9c3b7;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.sf-dash-sidebar__logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #b7d0c3;
+
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sf-dash-sidebar__logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sf-dash-sidebar__logout:focus-visible {
+  outline: 2px solid #d5e8bc;
+  outline-offset: 2px;
+}
