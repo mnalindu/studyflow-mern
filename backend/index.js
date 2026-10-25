@@ -3,26 +3,34 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
-// Import database connection
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
-// Create Express application
 const app = express();
 
+// =====================================
 // Middleware
+// =====================================
+
 app.use(
   cors({
     origin:
       process.env.CLIENT_URL ||
       "http://localhost:5173",
+    credentials: true,
   })
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "20kb" }));
+app.use(cookieParser());
 
-// Home API Route
+// =====================================
+// API Routes
+// =====================================
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -30,32 +38,51 @@ app.get("/", (req, res) => {
   });
 });
 
-// Health Check Route
 app.get("/api/health", (req, res) => {
-  const dbConnected =
+  const connected =
     mongoose.connection.readyState === 1;
 
-  res.status(dbConnected ? 200 : 503).json({
-    success: dbConnected,
-    message: dbConnected
+  res.status(connected ? 200 : 503).json({
+    success: connected,
+    message: connected
       ? "StudyFlow Backend is running successfully"
       : "Database is disconnected",
-    database: dbConnected
+    database: connected
       ? "Connected"
       : "Disconnected",
   });
 });
 
-// Backend Port
+// Authentication routes
+app.use("/api/auth", authRoutes);
+
+// Unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API route not found.",
+  });
+});
+
+// =====================================
+// Start Server
+// =====================================
+
 const PORT = process.env.PORT || 5000;
 
-// Start server after connecting to MongoDB
-const startServer = async () => {
+async function startServer() {
   try {
-    // Step 1: Connect database
+    if (
+      !process.env.JWT_SECRET ||
+      process.env.JWT_SECRET.length < 32
+    ) {
+      throw new Error(
+        "JWT_SECRET must contain at least 32 characters."
+      );
+    }
+
     await connectDB();
 
-    // Step 2: Start Express
     app.listen(PORT, () => {
       console.log(
         `StudyFlow Backend running on port ${PORT}`
@@ -69,6 +96,6 @@ const startServer = async () => {
 
     process.exit(1);
   }
-};
+}
 
 startServer();
