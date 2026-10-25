@@ -1,44 +1,74 @@
 
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
-// Load environment variables
-dotenv.config();
+// Import database connection
+const connectDB = require("./config/db");
 
-// Initialize Express
+// Create Express application
 const app = express();
 
 // Middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin:
+      process.env.CLIENT_URL ||
+      "http://localhost:5173",
   })
 );
 
 app.use(express.json());
 
-// Root API Route
+// Home API Route
 app.get("/", (req, res) => {
   res.json({
-    message: "StudyFlow Backend API is running!",
+    success: true,
+    message: "Welcome to StudyFlow Backend API",
   });
 });
 
 // Health Check Route
 app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "StudyFlow API is healthy",
+  const dbConnected =
+    mongoose.connection.readyState === 1;
+
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    message: dbConnected
+      ? "StudyFlow Backend is running successfully"
+      : "Database is disconnected",
+    database: dbConnected
+      ? "Connected"
+      : "Disconnected",
   });
 });
 
-// Server Port
+// Backend Port
 const PORT = process.env.PORT || 5000;
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(
-    `StudyFlow backend running on http://localhost:${PORT}`
-  );
-});
+// Start server after connecting to MongoDB
+const startServer = async () => {
+  try {
+    // Step 1: Connect database
+    await connectDB();
+
+    // Step 2: Start Express
+    app.listen(PORT, () => {
+      console.log(
+        `StudyFlow Backend running on port ${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error(
+      "Backend startup failed:",
+      error.message
+    );
+
+    process.exit(1);
+  }
+};
+
+startServer();
