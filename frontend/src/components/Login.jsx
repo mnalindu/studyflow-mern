@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 
 import "./Login.css";
+import { loginUser } from "../services/authApi";
+import { useAuth } from "./AuthContext";
 
 // Decorative dashboard preview on the left
 function LoginPreview() {
@@ -176,16 +178,52 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  const { setAuthenticatedUser } = useAuth();
 
-    // Backend authentication will be integrated later.
-    // Do not save or send credentials at this stage.
-    setNotice(
-      "Login is not connected yet. We're building secure account authentication next."
-    );
+  
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  setNotice("");
+
+  // Basic validation
+  if (!email.trim() || !password) {
+    setNotice("Please enter your email and password.");
+    return;
   }
+
+  setIsSubmitting(true);
+
+  try {
+    // Send credentials to Express backend
+    const response = await loginUser({
+      email: email.trim(),
+      password,
+    });
+
+    
+    if (response.success && response.user) {
+        // Save logged-in user in AuthContext
+        setAuthenticatedUser(response.user);
+
+        setNotice("");
+
+        // Navigate to Dashboard
+        window.location.hash = "#dashboard";
+     }
+
+  } catch (error) {
+    // Display backend validation/login errors
+    setNotice(
+      error.message || "Login failed. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   function handleForgotPassword() {
     setNotice(
@@ -317,8 +355,9 @@ export default function Login() {
             <button
               type="submit"
               className="sf-login__submit"
+              disabled={isSubmitting}
             >
-              Log in
+              {isSubmitting ? "Signing in..." : "Log in"}
               <ArrowRight size={20} />
             </button>
           </form>

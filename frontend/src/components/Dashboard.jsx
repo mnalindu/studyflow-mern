@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useAuth } from "./AuthContext";
 
 import {
   Leaf,
@@ -68,8 +69,6 @@ import { useStudyTasks } from "./StudyTasksContext";
 
 import "./Dashboard.css";
 
-const studentName = "Alex";
-
 // =====================================
 // Sidebar Navigation Items
 // =====================================
@@ -123,6 +122,9 @@ function DashboardSidebar({
   activePage,
   onOpenPreferences,
   onLogout,
+  studentName,
+  avatarInitial,
+  isLoggingOut,
 }) {
   const { pendingCount } = useStudyTasks();
 
@@ -248,7 +250,7 @@ function DashboardSidebar({
       {/* User Profile and Logout */}
       <div className="sf-dash-sidebar__user">
         <span className="sf-dash-sidebar__user-avatar">
-          {studentName.charAt(0)}
+          {avatarInitial}
         </span>
 
         <div className="sf-dash-sidebar__user-details">
@@ -260,8 +262,9 @@ function DashboardSidebar({
           type="button"
           className="sf-dash-sidebar__logout"
           aria-label="Sign out"
-          title="Sign out"
+          title={isLoggingOut ? "Signing out..." : "Sign out"}
           onClick={onLogout}
+          disabled={isLoggingOut}
         >
           <LogOut size={21} strokeWidth={1.8} />
         </button>
@@ -280,6 +283,8 @@ function DashboardHeader({
   showNotice,
   pageName,
   onOpenPreferences,
+  studentName,
+  avatarInitial,
 }) {
   const [search, setSearch] = useState("");
 
@@ -437,7 +442,7 @@ function DashboardHeader({
             {/* Profile Avatar */}
 
             <span className="sf-dash-header__avatar">
-              {studentName.charAt(0)}
+              {avatarInitial}
             </span>
 
             {/* Username */}
@@ -567,7 +572,7 @@ function WelcomeIllustration() {
 // Dashboard Welcome Section
 // =====================================
 
-function DashboardWelcome() {
+function DashboardWelcome({ firstName }) {
   const today = new Date().toLocaleDateString(
     "en-US",
     {
@@ -606,7 +611,7 @@ function DashboardWelcome() {
             </p>
 
             <h1>
-              Welcome back, {studentName}.
+              Welcome back, {firstName}.
             </h1>
 
             <p className="sf-dash-welcome__description">
@@ -722,6 +727,16 @@ function DashboardWelcome() {
 export default function Dashboard({
   view = "dashboard",
 }) {
+  // Authentication State
+  const { user, logout } = useAuth();
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+
+  const displayName = user?.name?.trim() || "Student";
+  const firstName = displayName.split(/\s+/)[0];
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+
   // =====================================
   // Sidebar State
   // =====================================
@@ -788,14 +803,24 @@ export default function Dashboard({
     setPreferencesOpen(false);
   }
 
-  function handleLogout() {
-  setPreferencesOpen(false);
-  setMobileOpen(false);
+  async function handleLogout() {
+    if (isLoggingOut) return;
 
-  // Frontend demo: navigate to the Login page.
-  // Real session invalidation will be added
-  // with the authentication backend.
-  window.location.hash = "#login";
+    setIsLoggingOut(true);
+    setLogoutError("");
+    setPreferencesOpen(false);
+    setMobileOpen(false);
+
+    try {
+      // AuthContext calls POST /api/auth/logout,
+      // clears the current user, and navigates to #login.
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setLogoutError("Unable to log out. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
+    }
   }
 
   // =====================================
@@ -843,6 +868,9 @@ export default function Dashboard({
         activePage={pageName}
         onOpenPreferences={handleOpenPreferences}
         onLogout={handleLogout}
+        studentName={displayName}
+        avatarInitial={avatarInitial}
+        isLoggingOut={isLoggingOut}
       />
 
       {/* =================================
@@ -860,6 +888,8 @@ export default function Dashboard({
           showNotice={setNotice}
           pageName={pageName}
           onOpenPreferences={handleOpenPreferences}
+          studentName={displayName}
+          avatarInitial={avatarInitial}
         />
 
         {/* =================================
@@ -889,6 +919,19 @@ export default function Dashboard({
                 <X size={18} />
               </button>
 
+            </div>
+          )}
+
+          {logoutError && (
+            <div className="sf-dashboard__notice" role="alert">
+              <span>{logoutError}</span>
+              <button
+                type="button"
+                aria-label="Dismiss logout error"
+                onClick={() => setLogoutError("")}
+              >
+                <X size={18} />
+              </button>
             </div>
           )}
 
@@ -925,7 +968,7 @@ export default function Dashboard({
             <>
               {/* Dashboard Welcome */}
 
-              <DashboardWelcome />
+              <DashboardWelcome firstName={firstName} />
 
               {/* Quick Actions + Statistics */}
 
@@ -964,7 +1007,7 @@ export default function Dashboard({
 
       {preferencesOpen && (
         <PreferencesModal
-          studentName={studentName}
+          studentName={displayName}
           onClose={handleClosePreferences}
           onSaved={handleSavedPreferences}
         />
