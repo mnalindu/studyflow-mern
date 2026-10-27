@@ -10,6 +10,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const noteRoutes = require("./routes/noteRoutes");
+const studySessionRoutes = require("./routes/studySessionRoutes");
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use("/api/auth", authRoutes);
 // Task Management Routes
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/study-sessions", studySessionRoutes);
 
 // Unknown routes
 app.use((req, res) => {
