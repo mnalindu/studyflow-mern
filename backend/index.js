@@ -13,6 +13,7 @@ const noteRoutes = require("./routes/noteRoutes");
 const studySessionRoutes = require("./routes/studySessionRoutes");
 const studyInsightsRoutes = require("./routes/studyInsightsRoutes");
 const studyRoomRoutes = require("./routes/studyRoomRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -66,6 +67,8 @@ app.use("/api/notes", noteRoutes);
 app.use("/api/study-sessions", studySessionRoutes);
 app.use("/api/study-insights", studyInsightsRoutes);
 app.use("/api/study-rooms", studyRoomRoutes);
+app.use("/api/notifications", notificationRoutes);
+
 
 // Unknown routes
 app.use((req, res) => {
