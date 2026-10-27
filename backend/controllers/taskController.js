@@ -1,6 +1,10 @@
 
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
+const {
+  syncTaskDeadlineReminder,
+  deleteTaskDeadlineReminder,
+} = require("../services/taskReminderService");
 
 // Fields students are allowed to change
 const allowedFields = [
@@ -172,6 +176,39 @@ function handleTaskError(res, error) {
 }
 
 // =====================================
+// Automatic Reminder Helpers
+// =====================================
+
+// A task operation should not look like it failed AFTER the task
+// has already been saved. If reminder sync fails, report a warning
+// while keeping the existing task API response successful.
+async function syncReminderSafely(task, userId) {
+  try {
+    await syncTaskDeadlineReminder({ task, userId });
+    return {};
+  } catch (error) {
+    console.error("Automatic reminder sync failed:", error);
+    return {
+      reminderWarning:
+        "Task saved, but its automatic reminder could not be updated.",
+    };
+  }
+}
+
+async function deleteReminderSafely(taskId, userId) {
+  try {
+    await deleteTaskDeadlineReminder({ taskId, userId });
+    return {};
+  } catch (error) {
+    console.error("Automatic reminder removal failed:", error);
+    return {
+      reminderWarning:
+        "Task deleted, but its automatic reminder could not be removed.",
+    };
+  }
+}
+
+// =====================================
 // CREATE TASK
 // POST /api/tasks
 // =====================================
@@ -195,10 +232,17 @@ exports.createTask = async (req, res) => {
       user: req.user._id,
     });
 
+    // Schedule reminder if task is incomplete and has a due date.
+    const reminderResult = await syncReminderSafely(
+      task,
+      req.user._id
+    );
+
     return res.status(201).json({
       success: true,
       message: "Task created successfully.",
       task: formatTask(task),
+      ...reminderResult,
     });
   } catch (error) {
     return handleTaskError(res, error);
@@ -305,10 +349,18 @@ exports.updateTask = async (req, res) => {
       });
     }
 
+    // Keep the automatic reminder in sync with the saved task.
+    // Handles due-date edits, title changes, completion, and reopening.
+    const reminderResult = await syncReminderSafely(
+      task,
+      req.user._id
+    );
+
     return res.status(200).json({
       success: true,
       message: "Task updated successfully.",
       task: formatTask(task),
+      ...reminderResult,
     });
   } catch (error) {
     return handleTaskError(res, error);
@@ -341,9 +393,17 @@ exports.deleteTask = async (req, res) => {
       });
     }
 
+    // Remove only the system-generated reminder for this task.
+    // Manually scheduled reminders are never deleted here.
+    const reminderResult = await deleteReminderSafely(
+      task._id,
+      req.user._id
+    );
+
     return res.status(200).json({
       success: true,
       message: "Task deleted successfully.",
+      ...reminderResult,
     });
   } catch (error) {
     return handleTaskError(res, error);
