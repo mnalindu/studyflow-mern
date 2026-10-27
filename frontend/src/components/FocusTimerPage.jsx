@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Sun,
@@ -15,6 +15,12 @@ import {
   Leaf,
 } from "lucide-react";
 
+import { useAuth } from "./AuthContext";
+import {
+  createStudySession,
+  getStudySessions,
+  getStudySessionStats,
+} from "../services/studySessionApi";
 import "./FocusTimerPage.css";
 
 // Pomodoro durations in seconds
@@ -35,6 +41,15 @@ const MODES = {
 
 const CIRCUMFERENCE = 2 * Math.PI * 142;
 
+// Use the student's own calendar day (not a UTC calendar day).
+function todayRange() {
+  const now = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  return { from: from.toISOString(), to: to.toISOString() };
+}
+
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -53,6 +68,12 @@ function TimerCard({
   remaining,
   running,
   sessions,
+  sessionsLoading,
+  sessionError,
+  saveMessage,
+  saveFailed,
+  retrySaving,
+  onRetrySave,
   onModeChange,
   onToggle,
   onReset,
@@ -223,11 +244,47 @@ function TimerCard({
         </div>
 
         <span>
-          {sessions}{" "}
-          {sessions === 1 ? "session" : "sessions"}{" "}
-          completed today
+          {sessionsLoading
+            ? "Loading today's sessions..."
+            : `${sessions} ${sessions === 1 ? "session" : "sessions"} completed today`}
         </span>
       </div>
+
+      {/* Session save / load status; uses existing card layout and CSS. */}
+      {(saveMessage || sessionError) && (
+        <div
+          role={saveFailed || (!saveMessage && sessionError) ? "alert" : "status"}
+          aria-live="polite"
+          style={{
+            textAlign: "center",
+            marginTop: 10,
+            fontSize: 13,
+            color: saveFailed || (!saveMessage && sessionError)
+              ? "#b45309"
+              : "#557361",
+          }}
+        >
+          {saveMessage || sessionError}
+          {saveFailed && (
+            <button
+              type="button"
+              disabled={retrySaving}
+              onClick={onRetrySave}
+              style={{
+                marginLeft: 8,
+                padding: "4px 10px",
+                border: "1px solid currentColor",
+                borderRadius: 8,
+                background: "transparent",
+                color: "inherit",
+                cursor: retrySaving ? "wait" : "pointer",
+              }}
+            >
+              {retrySaving ? "Checking..." : "Retry save"}
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -237,18 +294,191 @@ function TimerCard({
 // ---------------------------------------
 
 export default function FocusTimerPage() {
+  const { user, authLoading } = useAuth();
+  const userId = user?.id || null;
+
   const [mode, setMode] = useState("focus");
-  const [remaining, setRemaining] = useState(
-    MODES.focus.seconds
-  );
+  const [remaining, setRemaining] = useState(MODES.focus.seconds);
   const [running, setRunning] = useState(false);
-  const [sessions, setSessions] = useState(0);
   const [expanded, setExpanded] = useState(false);
+
+  const [todayState, setTodayState] = useState({
+    ownerId: null,
+    dayFrom: null,
+    count: 0,
+    loading: true,
+    error: "",
+  });
+  const [saveState, setSaveState] = useState({
+    message: "",
+    failed: false,
+    saving: false,
+  });
 
   const deadlineRef = useRef(null);
   const finishedRef = useRef(false);
+  const sessionStartedAtRef = useRef(null);
+  const pendingSessionRef = useRef(null);
+  const mountedRef = useRef(false);
+  const latestUserIdRef = useRef(userId);
 
-  // Keep countdown aligned with real elapsed time
+  // Guard async UI updates if the student logs out or leaves the page.
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  useEffect(() => {
+    latestUserIdRef.current = userId;
+  }, [userId]);
+
+  // Read the number of focus sessions completed *today* from MongoDB.
+  useEffect(() => {
+    let active = true;
+
+    if (authLoading) {
+      setTodayState({
+        ownerId: null, dayFrom: null, count: 0, loading: true, error: "",
+      });
+      return () => { active = false; };
+    }
+
+    if (!userId) {
+      setTodayState({
+        ownerId: null, dayFrom: null, count: 0, loading: false, error: "",
+      });
+      setSaveState({ message: "", failed: false, saving: false });
+      pendingSessionRef.current = null;
+      return () => { active = false; };
+    }
+
+    const { from, to } = todayRange();
+    setTodayState({ ownerId: userId, dayFrom: from, count: 0, loading: true, error: "" });
+
+    async function loadToday() {
+      try {
+        const response = await getStudySessionStats({ from, to });
+        if (!active) return;
+        setTodayState({
+          ownerId: userId,
+          dayFrom: from,
+          count: response.stats?.periodSessions ?? 0,
+          loading: false,
+          error: "",
+        });
+      } catch (error) {
+        if (!active) return;
+        setTodayState({
+          ownerId: userId,
+          dayFrom: from,
+          count: 0,
+          loading: false,
+          error: error.message || "Could not load today's sessions.",
+        });
+      }
+    }
+
+    void loadToday();
+    return () => { active = false; };
+  }, [userId, authLoading]);
+
+  // A successful save is counted only after MongoDB confirms the POST.
+  const markSaved = useCallback(async (ownerId) => {
+    if (!mountedRef.current || latestUserIdRef.current !== ownerId) return;
+
+    const range = todayRange();
+    setTodayState((current) => ({
+      ownerId,
+      dayFrom: range.from,
+      count: current.ownerId === ownerId && current.dayFrom === range.from
+        ? current.count + 1
+        : 1,
+      loading: false,
+      error: "",
+    }));
+    setSaveState({
+      message: "Focus session saved to MongoDB!",
+      failed: false,
+      saving: false,
+    });
+    pendingSessionRef.current = null;
+
+    // Re-read exact count (also handles sessions saved from other tabs).
+    try {
+      const response = await getStudySessionStats(range);
+      if (!mountedRef.current || latestUserIdRef.current !== ownerId) return;
+      setTodayState({
+        ownerId,
+        dayFrom: range.from,
+        count: response.stats?.periodSessions ?? 0,
+        loading: false,
+        error: "",
+      });
+    } catch {
+      // The POST succeeded. Keep the optimistic count until next refresh.
+    }
+  }, []);
+
+  const saveFocusSession = useCallback(async (payload, retry = false) => {
+    if (!userId) {
+      setSaveState({ message: "Please log in to save sessions.", failed: true, saving: false });
+      return;
+    }
+
+    setSaveState({ message: "Saving focus session...", failed: false, saving: true });
+
+    try {
+      // If a previous response was lost, check history before manually
+      // retrying so the same completed session is not normally duplicated.
+      if (retry) {
+        const history = await getStudySessions();
+        const alreadySaved = (history.sessions || []).some((session) =>
+          session.durationSeconds === payload.durationSeconds &&
+          new Date(session.startedAt).getTime() === new Date(payload.startedAt).getTime() &&
+          new Date(session.completedAt).getTime() === new Date(payload.completedAt).getTime()
+        );
+
+        if (alreadySaved) {
+          // Avoid adding an extra count for an already-recorded session.
+          const range = todayRange();
+          const stats = await getStudySessionStats(range);
+          if (mountedRef.current && latestUserIdRef.current === userId) {
+            setTodayState({
+              ownerId: userId,
+              dayFrom: range.from,
+              count: stats.stats?.periodSessions ?? 0,
+              loading: false,
+              error: "",
+            });
+            pendingSessionRef.current = null;
+            setSaveState({
+              message: "Focus session was already saved!",
+              failed: false,
+              saving: false,
+            });
+          }
+          return;
+        }
+      }
+
+      await createStudySession(payload);
+      await markSaved(userId);
+    } catch (error) {
+      if (!mountedRef.current || latestUserIdRef.current !== userId) return;
+      setSaveState({
+        message: error.message || "Could not save focus session.",
+        failed: true,
+        saving: false,
+      });
+    }
+  }, [userId, markSaved]);
+
+  const retrySave = useCallback(() => {
+    if (saveState.saving || !pendingSessionRef.current) return;
+    void saveFocusSession(pendingSessionRef.current, true);
+  }, [saveState.saving, saveFocusSession]);
+
+  // Keep countdown aligned with elapsed real time, including background tabs.
   useEffect(() => {
     if (!running) return;
 
@@ -257,11 +487,8 @@ export default function FocusTimerPage() {
 
       const next = Math.max(
         0,
-        Math.ceil(
-          (deadlineRef.current - Date.now()) / 1000
-        )
+        Math.ceil((deadlineRef.current - Date.now()) / 1000)
       );
-
       setRemaining(next);
 
       if (next === 0 && !finishedRef.current) {
@@ -270,13 +497,30 @@ export default function FocusTimerPage() {
         deadlineRef.current = null;
 
         if (mode === "focus") {
-          setSessions((count) => count + 1);
+          const start = sessionStartedAtRef.current;
+          const end = new Date().toISOString();
+          if (start) {
+            const payload = {
+              durationSeconds: MODES.focus.seconds,
+              startedAt: start,
+              completedAt: end,
+            };
+            pendingSessionRef.current = payload;
+            void saveFocusSession(payload);
+          } else {
+            setSaveState({
+              message: "Session finished but start time was missing.",
+              failed: false,
+              saving: false,
+            });
+          }
         }
+        sessionStartedAtRef.current = null;
       }
     }, 200);
 
     return () => clearInterval(interval);
-  }, [running, mode]);
+  }, [running, mode, saveFocusSession]);
 
   // Full-screen mode keyboard and scroll handling
   useEffect(() => {
@@ -308,6 +552,7 @@ export default function FocusTimerPage() {
     setRemaining(MODES[nextMode].seconds);
     deadlineRef.current = null;
     finishedRef.current = false;
+    sessionStartedAtRef.current = null;
   }
 
   function toggleTimer() {
@@ -338,6 +583,12 @@ export default function FocusTimerPage() {
     setRemaining(seconds);
     finishedRef.current = false;
 
+    // Keep the original start time when resuming from pause.
+    if (sessionStartedAtRef.current === null) {
+      sessionStartedAtRef.current = new Date().toISOString();
+    }
+    setSaveState({ message: "", failed: false, saving: false });
+
     deadlineRef.current = Date.now() + seconds * 1000;
     setRunning(true);
   }
@@ -346,6 +597,7 @@ export default function FocusTimerPage() {
     setRunning(false);
     deadlineRef.current = null;
     finishedRef.current = false;
+    sessionStartedAtRef.current = null;
     setRemaining(MODES[mode].seconds);
   }
 
@@ -353,11 +605,21 @@ export default function FocusTimerPage() {
     setExpanded((value) => !value);
   }
 
+  const visibleTodayState = todayState.ownerId === userId ? todayState : null;
+  const sessions = visibleTodayState?.count ?? 0;
+  const sessionsLoading = authLoading || !visibleTodayState || visibleTodayState.loading;
+
   const timerProps = {
     mode,
     remaining,
     running,
     sessions,
+    sessionsLoading,
+    sessionError: visibleTodayState?.error || "",
+    saveMessage: saveState.message,
+    saveFailed: saveState.failed,
+    retrySaving: saveState.saving,
+    onRetrySave: retrySave,
     onModeChange: changeMode,
     onToggle: toggleTimer,
     onReset: resetTimer,
