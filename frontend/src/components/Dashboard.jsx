@@ -13,7 +13,6 @@ import {
   NotebookPen,
   Users,
   Settings,
-  Bell,
   ArrowUpRight,
   ChevronRight,
   ChevronDown,
@@ -62,6 +61,7 @@ import PreferencesModal, {
 // =====================================
 
 import { useStudyTasks } from "./StudyTasksContext";
+import DashboardNotifications from "./DashboardNotifications";
 
 // =====================================
 // Dashboard Styles
@@ -285,6 +285,7 @@ function DashboardHeader({
   onOpenPreferences,
   studentName,
   avatarInitial,
+  notificationUserKey,
 }) {
   const [search, setSearch] = useState("");
 
@@ -389,41 +390,14 @@ function DashboardHeader({
           </span>
         </form>
 
-        {/* =================================
-            Notifications
-        ================================= */}
-
-        <div className="sf-dash-header__popup">
-
-          <button
-            type="button"
-            className="sf-dash-header__icon-button"
-            aria-label="Notifications"
-            aria-expanded={notificationsOpen}
-            onClick={() =>
-              setNotificationsOpen(
-                (current) => !current
-              )
-            }
-          >
-            <Bell size={21} />
-          </button>
-
-          {notificationsOpen && (
-            <div className="sf-dash-header__dropdown">
-
-              <strong>
-                Notifications
-              </strong>
-
-              <p>
-                No new notifications yet.
-              </p>
-
-            </div>
-          )}
-
-        </div>
+        {/* MongoDB-backed notifications (original bell location) */}
+        <DashboardNotifications
+          key={notificationUserKey}
+          userKey={notificationUserKey}
+          open={notificationsOpen}
+          onToggle={() => setNotificationsOpen((current) => !current)}
+          onClose={() => setNotificationsOpen(false)}
+        />
 
         {/* =================================
             USER PROFILE BUTTON
@@ -890,6 +864,7 @@ export default function Dashboard({
           onOpenPreferences={handleOpenPreferences}
           studentName={displayName}
           avatarInitial={avatarInitial}
+          notificationUserKey={user?.id ?? user?._id ?? user?.email ?? ""}
         />
 
         {/* =================================
