@@ -32,6 +32,8 @@ export default function MyTasksPage() {
     addTask,
     toggleTask,
     deleteTask,
+    tasksLoading,
+    tasksError,
   } = useStudyTasks();
 
   const [activeFilter, setActiveFilter] =
@@ -40,6 +42,10 @@ export default function MyTasksPage() {
   const [showForm, setShowForm] = useState(false);
 
   const [form, setForm] = useState(emptyTask);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [busyTaskIds, setBusyTaskIds] = useState([]);
+  const [actionError, setActionError] = useState("");
 
   const filteredTasks = tasks.filter((task) => {
     if (activeFilter === "pending") {
@@ -51,36 +57,70 @@ export default function MyTasksPage() {
     }
 
     if (activeFilter === "high") {
-      return task.priority === "High";
+      return task.priority.toLowerCase() === "high";
     }
 
     return true;
   });
 
-  function handleAddTask(event) {
+  async function handleAddTask(event) {
     event.preventDefault();
+    if (!form.title.trim() || isSaving) return;
 
-    if (!form.title.trim()) return;
+    setIsSaving(true);
+    setActionError("");
 
-    addTask({
-      title: form.title.trim(),
-      subject: form.subject.trim() || "General",
-      due: form.due,
-      priority: form.priority,
-    });
+    try {
+      await addTask({
+        title: form.title.trim(),
+        subject: form.subject.trim() || "General",
+        due: form.due,
+        priority: form.priority,
+      });
 
-    setForm(emptyTask);
-    setShowForm(false);
-    setActiveFilter("all");
+      // Close the form only after MongoDB confirms the save.
+      setForm(emptyTask);
+      setShowForm(false);
+      setActiveFilter("all");
+    } catch (error) {
+      setActionError(error.message || "Failed to save task.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  function handleDelete(task) {
-    const confirmed = window.confirm(
-      `Delete "${task.title}"?`
-    );
+  async function handleToggle(task) {
+    if (busyTaskIds.includes(task.id)) return;
 
-    if (confirmed) {
-      deleteTask(task.id);
+    setActionError("");
+    setBusyTaskIds((current) => [...current, task.id]);
+
+    try {
+      await toggleTask(task.id);
+    } catch (error) {
+      setActionError(error.message || "Failed to update task.");
+    } finally {
+      setBusyTaskIds((current) =>
+        current.filter((id) => id !== task.id)
+      );
+    }
+  }
+
+  async function handleDelete(task) {
+    if (busyTaskIds.includes(task.id)) return;
+    if (!window.confirm(`Delete "${task.title}"?`)) return;
+
+    setActionError("");
+    setBusyTaskIds((current) => [...current, task.id]);
+
+    try {
+      await deleteTask(task.id);
+    } catch (error) {
+      setActionError(error.message || "Failed to delete task.");
+    } finally {
+      setBusyTaskIds((current) =>
+        current.filter((id) => id !== task.id)
+      );
     }
   }
 
@@ -110,6 +150,7 @@ export default function MyTasksPage() {
             setShowForm((current) => !current)
           }
           aria-expanded={showForm}
+          disabled={tasksLoading}
         >
           <Plus size={20} />
           Add task
@@ -207,22 +248,31 @@ export default function MyTasksPage() {
           </div>
 
           <div className="sf-my-tasks__form-actions">
-            <button type="submit">
+            <button type="submit" disabled={isSaving || tasksLoading}>
               <Check size={18} />
-              Save task
+              {isSaving ? "Saving..." : "Save task"}
             </button>
 
             <button
               type="button"
+              disabled={isSaving}
               onClick={() => {
                 setShowForm(false);
                 setForm(emptyTask);
+                setActionError("");
               }}
             >
               Cancel
             </button>
           </div>
         </form>
+      )}
+
+      {/* API error messages without changing the existing page styling */}
+      {actionError && (
+        <div className="sf-my-tasks__empty" role="alert">
+          <p>{actionError}</p>
+        </div>
       )}
 
       {/* Main Tasks Card */}
@@ -262,7 +312,16 @@ export default function MyTasksPage() {
 
         {/* Tasks */}
         <div className="sf-my-tasks__list">
-          {filteredTasks.length === 0 ? (
+          {tasksLoading ? (
+            <div className="sf-my-tasks__empty" role="status">
+              <p>Loading your tasks...</p>
+            </div>
+          ) : tasksError ? (
+            <div className="sf-my-tasks__empty" role="alert">
+              <p>Could not load your tasks.</p>
+              <span>{tasksError}</span>
+            </div>
+          ) : filteredTasks.length === 0 ? (
             <div className="sf-my-tasks__empty">
               <Check size={28} />
               <p>No tasks to show here.</p>
@@ -280,9 +339,8 @@ export default function MyTasksPage() {
                   type="checkbox"
                   className="sf-my-tasks__checkbox"
                   checked={task.completed}
-                  onChange={() =>
-                    toggleTask(task.id)
-                  }
+                  onChange={() => handleToggle(task)}
+                  disabled={busyTaskIds.includes(task.id)}
                   aria-label={
                     `${task.completed ? "Mark incomplete:" : "Complete:"} ${task.title}`
                   }
@@ -327,9 +385,8 @@ export default function MyTasksPage() {
                 <button
                   type="button"
                   className="sf-my-tasks__delete"
-                  onClick={() =>
-                    handleDelete(task)
-                  }
+                  onClick={() => handleDelete(task)}
+                  disabled={busyTaskIds.includes(task.id)}
                   aria-label={`Delete ${task.title}`}
                   title="Delete task"
                 >

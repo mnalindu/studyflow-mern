@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { registerUser } from "../services/authApi";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,6 +15,7 @@ import {
 
 import { LoginStory } from "./Login";
 import "./Signup.css";
+import { useAuth } from "./AuthContext";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -21,30 +23,59 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form submission
-  function handleSubmit(event) {
-    event.preventDefault();
+  
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    if (!name.trim()) {
-      setNotice("Please enter your name.");
-      return;
-    }
+  setNotice("");
 
-    if (password.length < 8) {
-      setNotice(
-        "Your password must contain at least 8 characters."
-      );
-      return;
-    }
-
-    // The backend will be integrated in a later step.
-    // No account is created or stored yet.
-    setPassword("");
-    setNotice(
-      "Account registration is not connected yet. Your details were not submitted or saved."
-    );
+  // Validate form fields
+  if (!name.trim() || !email.trim() || !password) {
+    setNotice("Please fill in all fields.");
+    return;
   }
+
+  if (password.length < 8) {
+    setNotice(
+      "Password must be at least 8 characters."
+    );
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // Send registration data to backend
+    const response = await registerUser({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+    });
+
+      
+    if (response.success && response.user) {
+       // Save newly registered user in AuthContext
+       setAuthenticatedUser(response.user);
+
+       setNotice("");
+
+       // Navigate to Dashboard
+       window.location.hash = "#dashboard";
+    }
+
+  } catch (error) {
+    setNotice(
+      error.message ||
+        "Registration failed. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <main className="sf-login sf-signup">
@@ -232,8 +263,11 @@ export default function Signup() {
             <button
               type="submit"
               className="sf-login__submit sf-signup__submit"
+              disabled={isSubmitting}
             >
-              Create account
+              {isSubmitting
+                 ? "Creating account..." : "Create account"}
+                 
               <ArrowRight size={20} />
             </button>
           </form>

@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -6,128 +5,207 @@ import {
   useState,
 } from "react";
 
+import { useAuth } from "./AuthContext";
+import {
+  getTasks as fetchTasks,
+  createTask as createTaskApi,
+  updateTask as updateTaskApi,
+  deleteTask as deleteTaskApi,
+} from "../services/taskApi";
+
 const StudyTasksContext = createContext(null);
-const STORAGE_KEY = "studyflow-tasks-v1";
 
-// Initial tasks matching your reference design
-const starterTasks = [
-  {
-    id: 1,
-    title: "Finish database assignment",
-    subject: "Computer Science",
-    due: "2026-10-14",
-    priority: "High",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Revise chapter 04: Integration",
-    subject: "Mathematics",
-    due: "2026-10-14",
-    priority: "Medium",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Read 20 pages of Atomic Habits",
-    subject: "Personal growth",
-    due: "2026-10-14",
-    priority: "Low",
-    completed: true,
-  },
-  {
-    id: 4,
-    title: "Prepare presentation outline",
-    subject: "Communication",
-    due: "2026-10-15",
-    priority: "Medium",
-    completed: false,
-  },
-];
+// Keep the priority labels expected by the existing StudyFlow UI.
+function toFrontendTask(task) {
+  const priority = String(task.priority || "medium").toLowerCase();
 
-// Load previously saved browser tasks
-function loadTasks() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (saved !== null) {
-      const parsed = JSON.parse(saved);
-
-      if (
-        Array.isArray(parsed) &&
-        parsed.every(
-          (task) =>
-            task &&
-            (typeof task.id === "string" ||
-              typeof task.id === "number") &&
-            typeof task.title === "string" &&
-            typeof task.completed === "boolean"
-        )
-      ) {
-        return parsed;
-      }
-    }
-  } catch {
-    // Continue with example tasks if storage is unavailable.
-  }
-
-  return starterTasks;
+  return {
+    ...task,
+    id: String(task.id ?? task._id),
+    subject: task.subject || "General",
+    due: task.due || "",
+    priority: priority.charAt(0).toUpperCase() + priority.slice(1),
+    completed: Boolean(task.completed),
+  };
 }
 
+const emptyTaskState = {
+  ownerId: null,
+  items: [],
+  loading: false,
+  error: "",
+};
+
 export function StudyTasksProvider({ children }) {
-  const [tasks, setTasks] = useState(loadTasks);
+  const { user, authLoading } = useAuth();
+  const userId = user?.id ?? null;
 
-  // Save tasks whenever they change
+  const [taskState, setTaskState] = useState(emptyTaskState);
+
+  // Load only the authenticated student's tasks from MongoDB.
+  // Clearing on user changes prevents showing another student's tasks.
   useEffect(() => {
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(tasks)
-      );
-    } catch {
-      // Tasks still work during this session.
+    let active = true;
+
+    if (authLoading) {
+      setTaskState({ ...emptyTaskState, loading: true });
+      return () => {
+        active = false;
+      };
     }
-  }, [tasks]);
 
-  function addTask(task) {
-    setTasks((current) => [
-      ...current,
-      {
-        id:
-          typeof crypto !== "undefined" &&
-          crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${current.length}`,
-        title: task.title,
-        subject: task.subject || "General",
-        due: task.due || "",
-        priority: task.priority || "Medium",
-        completed: false,
-      },
-    ]);
+    if (!userId) {
+      setTaskState(emptyTaskState);
+      return () => {
+        active = false;
+      };
+    }
+
+    setTaskState({
+      ownerId: userId,
+      items: [],
+      loading: true,
+      error: "",
+    });
+
+    async function loadTasks() {
+      try {
+        const response = await fetchTasks();
+
+        if (!active) return;
+
+        setTaskState({
+          ownerId: userId,
+          items: (response.tasks || []).map(toFrontendTask),
+          loading: false,
+          error: "",
+        });
+      } catch (error) {
+        if (!active) return;
+
+        setTaskState({
+          ownerId: userId,
+          items: [],
+          loading: false,
+          error: error.message || "Could not load your tasks.",
+        });
+      }
+    }
+
+    loadTasks();
+
+    return () => {
+      active = false;
+    };
+  }, [userId, authLoading]);
+
+  // Never expose stale tasks to a different (or logged-out) student.
+  const tasks =
+    userId && taskState.ownerId === userId
+      ? taskState.items
+      : [];
+
+  const tasksLoading =
+    authLoading ||
+    (Boolean(userId) &&
+      (taskState.ownerId !== userId || taskState.loading));
+
+  const tasksError =
+    taskState.ownerId === userId ? taskState.error : "";
+
+  function ensureReady() {
+    if (!userId) {
+      throw new Error("Please log in to manage tasks.");
+    }
+    if (tasksLoading) {
+      throw new Error("Your tasks are still loading. Please try again.");
+    }
+    if (tasksError) {
+      throw new Error("Could not load tasks. Please refresh and retry.");
+    }
   }
 
-  function toggleTask(id) {
-    setTasks((current) =>
-      current.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
-      )
+  async function addTask(task) {
+    ensureReady();
+
+    const response = await createTaskApi({
+      title: task.title,
+      subject: task.subject || "General",
+      due: task.due || "",
+      priority: (task.priority || "Medium").toLowerCase(),
+      description: task.description || "",
+    });
+
+    const newTask = toFrontendTask(response.task);
+
+    setTaskState((current) =>
+      current.ownerId === userId
+        ? { ...current, items: [newTask, ...current.items] }
+        : current
+    );
+
+    return newTask;
+  }
+
+  async function updateTask(id, changes) {
+    ensureReady();
+
+    const payload = { ...changes };
+    if (typeof payload.priority === "string") {
+      payload.priority = payload.priority.toLowerCase();
+    }
+
+    const response = await updateTaskApi(id, payload);
+    const updated = toFrontendTask(response.task);
+
+    setTaskState((current) =>
+      current.ownerId === userId
+        ? {
+            ...current,
+            items: current.items.map((task) =>
+              task.id === id ? updated : task
+            ),
+          }
+        : current
+    );
+
+    return updated;
+  }
+
+  async function toggleTask(id) {
+    const task = tasks.find((item) => item.id === id);
+    if (!task) throw new Error("Task not found.");
+
+    return updateTask(id, { completed: !task.completed });
+  }
+
+  async function deleteTask(id) {
+    ensureReady();
+    await deleteTaskApi(id);
+
+    setTaskState((current) =>
+      current.ownerId === userId
+        ? {
+            ...current,
+            items: current.items.filter((task) => task.id !== id),
+          }
+        : current
     );
   }
 
-  function deleteTask(id) {
-    setTasks((current) =>
-      current.filter((task) => task.id !== id)
-    );
-  }
+  const completedCount = tasks.filter((task) => task.completed).length;
+  const pendingCount = tasks.length - completedCount;
 
   return (
     <StudyTasksContext.Provider
       value={{
         tasks,
+        tasksLoading,
+        tasksError,
+        pendingCount,
+        completedCount,
         addTask,
+        updateTask,
         toggleTask,
         deleteTask,
       }}

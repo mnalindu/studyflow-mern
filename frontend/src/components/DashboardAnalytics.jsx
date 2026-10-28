@@ -8,30 +8,10 @@ import {
   Leaf,
 } from "lucide-react";
 
+import { getDailyStudyGoal } from "./PreferencesModal";
+import { useStudyInsights, focusMetrics, chartAxisMax } from "../hooks/useStudyInsights";
 import "./DashboardAnalytics.css";
 
-// Example chart data for the UI.
-// Real study session data will replace this later.
-const weeklyData = {
-  current: [
-    { day: "Mon", hours: 1.7 },
-    { day: "Tue", hours: 2.7 },
-    { day: "Wed", hours: 1.9 },
-    { day: "Thu", hours: 3.3 },
-    { day: "Fri", hours: 2.4 },
-    { day: "Sat", hours: 1.2 },
-    { day: "Sun", hours: 0.5 },
-  ],
-  previous: [
-    { day: "Mon", hours: 1.2 },
-    { day: "Tue", hours: 2.1 },
-    { day: "Wed", hours: 2.8 },
-    { day: "Thu", hours: 1.6 },
-    { day: "Fri", hours: 3.0 },
-    { day: "Sat", hours: 1.8 },
-    { day: "Sun", hours: 1.0 },
-  ],
-};
 
 // -----------------------------------
 // WEEKLY FOCUS CHART
@@ -42,8 +22,10 @@ function WeeklyFocusChart() {
     useState("current");
 
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const data = weeklyData[selectedWeek];
+  const { data: insights, loading, error } = useStudyInsights();
+  const metrics = focusMetrics(insights);
+  const data = selectedWeek === "current" ? metrics.currentWeek : metrics.previousWeek;
+  const axisMax = chartAxisMax(data);
 
   const weekLabel =
     selectedWeek === "current"
@@ -117,24 +99,27 @@ function WeeklyFocusChart() {
           Focus time
         </span>
 
-        <small>Sample weekly activity</small>
+        <small>{loading && !insights ? "Loading focus data..." : "Completed focus sessions"}</small>
       </div>
 
       {/* Chart */}
       <div
         className="sf-analytics-weekly__chart"
         role="img"
-        aria-label={`Illustrative focus hours for ${weekLabel.toLowerCase()}: ${data
-          .map((item) => `${item.day} ${item.hours} hours`)
+        aria-label={`Focus hours for ${weekLabel.toLowerCase()}: ${data
+          .map((item) => `${item.day} ${item.hours.toFixed(2)} hours`)
           .join(", ")}`}
       >
         {/* Y Axis */}
         <div className="sf-analytics-weekly__y-axis">
-          {[4, 3, 2, 1, 0].map((hour) => (
-            <span key={hour}>
-              {hour === 0 ? "0" : `${hour}h`}
-            </span>
-          ))}
+          {[4, 3, 2, 1, 0].map((tick) => {
+            const hour = (tick / 4) * axisMax;
+            return (
+              <span key={tick}>
+                {hour === 0 ? "0" : `${hour}h`}
+              </span>
+            );
+          })}
         </div>
 
         {/* Graph Area */}
@@ -153,7 +138,7 @@ function WeeklyFocusChart() {
                   }`}
                   style={{
                     height: `${
-                      (item.hours / 4) * 100
+                      Math.min(100, (item.hours / axisMax) * 100)
                     }%`,
                   }}
                   title={`${item.day}: ${item.hours} hours`}
@@ -163,6 +148,8 @@ function WeeklyFocusChart() {
           ))}
         </div>
       </div>
+
+      {error && <p role="alert" style={{ fontSize: 12, color: "#b45309" }}>{error}</p>}
 
       {/* X Axis */}
       <div className="sf-analytics-weekly__x-axis">
@@ -183,8 +170,7 @@ function WeeklyFocusChart() {
 const goalOptions = [60, 90, 120, 180, 240];
 
 function DailyGoal({ focusMinutes = 0 }) {
-  const [goalMinutes, setGoalMinutes] =
-    useState(120);
+  const [goalMinutes, setGoalMinutes] = useState(getDailyStudyGoal);
 
   const [menuOpen, setMenuOpen] =
     useState(false);
@@ -322,16 +308,14 @@ function DailyGoal({ focusMinutes = 0 }) {
 // MAIN COMPONENT
 // -----------------------------------
 
-export default function DashboardAnalytics({
-  focusMinutes = 0,
-}) {
+export default function DashboardAnalytics() {
+  const { data, loading } = useStudyInsights();
+  const metrics = focusMetrics(data);
+
   return (
     <div className="sf-dashboard-analytics">
       <WeeklyFocusChart />
-
-      <DailyGoal
-        focusMinutes={focusMinutes}
-      />
+      <DailyGoal focusMinutes={loading && !data ? 0 : Math.round(metrics.todaySeconds / 60)} />
     </div>
   );
 }

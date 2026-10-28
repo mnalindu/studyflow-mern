@@ -1,5 +1,6 @@
 
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -17,6 +18,9 @@ import {
 } from "lucide-react";
 
 import { useStudyTasks } from "./StudyTasksContext";
+import { useAuth } from "./AuthContext";
+import { createStudySession, getStudySessions } from "../services/studySessionApi";
+import { useStudyInsights, focusMetrics, refreshStudyInsights } from "../hooks/useStudyInsights";
 
 import "./DashboardProductivity.css";
 
@@ -337,19 +341,79 @@ const timerModes = {
   },
 };
 
-function FocusTimer({ showNotice }) {
+function FocusTimer() {
+  const { user } = useAuth();
+  const userId = user?.id || null;
+  const { data: insights, loading: insightsLoading, error: insightsError } = useStudyInsights();
+  const completedSessions = focusMetrics(insights).todaySessions;
+
   const [mode, setMode] = useState("focus");
-  const [remaining, setRemaining] =
-    useState(timerModes.focus.duration);
-
+  const [remaining, setRemaining] = useState(timerModes.focus.duration);
   const [running, setRunning] = useState(false);
-
-  const [
-    completedSessions,
-    setCompletedSessions,
-  ] = useState(0);
+  const [saveStatus, setSaveStatus] = useState("");
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const deadlineRef = useRef(null);
+  const startedAtRef = useRef(null);
+  const finishedRef = useRef(false);
+  const pendingRef = useRef(null);
+  const mountedRef = useRef(false);
+  const currentUserRef = useRef(userId);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  useEffect(() => { currentUserRef.current = userId; }, [userId]);
+
+  const saveSession = useCallback(async (payload, retry = false) => {
+    if (!userId) {
+      setSaveStatus("Log in to save focus sessions.");
+      setSaveFailed(true);
+      return;
+    }
+
+    setSaving(true);
+    setSaveStatus("Saving focus session...");
+    setSaveFailed(false);
+
+    try {
+      if (retry) {
+        // Guard against ordinary duplicate retries after a lost response.
+        const history = await getStudySessions();
+        const existing = (history.sessions || []).some((s) =>
+          s.durationSeconds === payload.durationSeconds &&
+          new Date(s.startedAt).getTime() === new Date(payload.startedAt).getTime() &&
+          new Date(s.completedAt).getTime() === new Date(payload.completedAt).getTime()
+        );
+        if (!existing) await createStudySession(payload);
+      } else {
+        await createStudySession(payload);
+      }
+      if (currentUserRef.current !== userId || !mountedRef.current) return;
+      pendingRef.current = null;
+      setSaveStatus("Focus session saved to MongoDB!");
+      setSaveFailed(false);
+      try {
+        await refreshStudyInsights(userId);
+      } catch {
+        // The POST succeeded; statistics can refresh on next navigation.
+        setSaveStatus("Session saved. Statistics will refresh when reconnected.");
+      }
+    } catch (error) {
+      if (currentUserRef.current !== userId || !mountedRef.current) return;
+      setSaveStatus(error.message || "Unable to save session.");
+      setSaveFailed(true);
+    } finally {
+      if (currentUserRef.current === userId && mountedRef.current) setSaving(false);
+    }
+  }, [userId]);
+
+  const retrySave = () => {
+    if (!saving && pendingRef.current) void saveSession(pendingRef.current, true);
+  };
 
   // Countdown
   useEffect(() => {
@@ -369,23 +433,31 @@ function FocusTimer({ showNotice }) {
     return () => clearInterval(interval);
   }, [running]);
 
-  // Session Completed
+  // Only completed Focus mode sessions are saved.
   useEffect(() => {
-    if (remaining !== 0 || !running) return;
+    if (remaining !== 0 || !running || finishedRef.current) return;
 
+    finishedRef.current = true;
     setRunning(false);
     deadlineRef.current = null;
 
-    if (mode === "focus") {
-      setCompletedSessions(
-        (count) => count + 1
-      );
+    if (mode === "focus" && startedAtRef.current) {
+      const payload = {
+        durationSeconds: timerModes.focus.duration,
+        startedAt: startedAtRef.current,
+        completedAt: new Date().toISOString(),
+      };
+      pendingRef.current = payload;
+      void saveSession(payload);
     }
-  }, [remaining, running, mode]);
+    startedAtRef.current = null;
+  }, [remaining, running, mode, saveSession]);
 
   function changeMode(nextMode) {
     setRunning(false);
     deadlineRef.current = null;
+    startedAtRef.current = null;
+    finishedRef.current = false;
 
     setMode(nextMode);
     setRemaining(
@@ -395,6 +467,10 @@ function FocusTimer({ showNotice }) {
 
   function toggleTimer() {
     if (running) {
+      // Capture the remaining seconds before pausing.
+      if (deadlineRef.current !== null) {
+        setRemaining(Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000)));
+      }
       setRunning(false);
       deadlineRef.current = null;
       return;
@@ -406,6 +482,10 @@ function FocusTimer({ showNotice }) {
         : remaining;
 
     setRemaining(startingSeconds);
+    finishedRef.current = false;
+    if (mode === "focus" && !startedAtRef.current) {
+      startedAtRef.current = new Date().toISOString();
+    }
 
     deadlineRef.current =
       Date.now() + startingSeconds * 1000;
@@ -416,6 +496,8 @@ function FocusTimer({ showNotice }) {
   function resetTimer() {
     setRunning(false);
     deadlineRef.current = null;
+    startedAtRef.current = null;
+    finishedRef.current = false;
 
     setRemaining(
       timerModes[mode].duration
@@ -449,11 +531,7 @@ function FocusTimer({ showNotice }) {
         <button
           type="button"
           aria-label="Open full focus timer"
-          onClick={() =>
-            showNotice(
-              "The full Focus Timer page will be added soon."
-            )
-          }
+          onClick={() => { window.location.hash = "#focus"; }}
         >
           <Maximize2 size={19} />
         </button>
@@ -583,13 +661,29 @@ function FocusTimer({ showNotice }) {
         </div>
 
         <span>
-          {completedSessions}{" "}
-          {completedSessions === 1
-            ? "session"
-            : "sessions"}{" "}
-          completed today
+          {insightsLoading && !insights ? "Loading today's sessions..." : (
+            <>{completedSessions} {completedSessions === 1 ? "session" : "sessions"} completed today</>
+          )}
         </span>
       </div>
+      {(saveStatus || insightsError) && (
+        <div
+          role={saveFailed || insightsError ? "alert" : "status"}
+          style={{ textAlign: "center", fontSize: 13, paddingBottom: 10, color: saveFailed || insightsError ? "#b45309" : "#557361" }}
+        >
+          {saveStatus || insightsError}
+          {saveFailed && pendingRef.current && (
+            <button
+              type="button"
+              onClick={retrySave}
+              disabled={saving}
+              style={{ marginLeft: 8, border: "1px solid currentColor", borderRadius: 7, padding: "4px 8px", background: "transparent", color: "inherit" }}
+            >
+              {saving ? "Retrying..." : "Retry save"}
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }

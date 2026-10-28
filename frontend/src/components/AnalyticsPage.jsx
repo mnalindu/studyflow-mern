@@ -13,35 +13,9 @@ import {
 } from "lucide-react";
 
 import { useStudyTasks } from "./StudyTasksContext";
+import { useStudyInsights, focusMetrics, focusDisplay, chartAxisMax } from "../hooks/useStudyInsights";
 import "./AnalyticsPage.css";
 
-// -----------------------------------
-// Illustrative chart data
-// Real focus history will replace this
-// when focus session tracking is built.
-// -----------------------------------
-
-const weeklyData = {
-  thisWeek: [
-    { day: "Mon", hours: 1.7 },
-    { day: "Tue", hours: 2.7 },
-    { day: "Wed", hours: 1.9 },
-    { day: "Thu", hours: 3.3 },
-    { day: "Fri", hours: 2.4 },
-    { day: "Sat", hours: 1.2 },
-    { day: "Sun", hours: 0.5 },
-  ],
-
-  lastWeek: [
-    { day: "Mon", hours: 2.1 },
-    { day: "Tue", hours: 1.5 },
-    { day: "Wed", hours: 2.6 },
-    { day: "Thu", hours: 1.8 },
-    { day: "Fri", hours: 3.1 },
-    { day: "Sat", hours: 1.4 },
-    { day: "Sun", hours: 0.8 },
-  ],
-};
 
 // -----------------------------------
 // Statistics Card
@@ -82,8 +56,10 @@ function AnalyticsStatCard({
 // Statistics Section
 // -----------------------------------
 
-function AnalyticsStatistics() {
+function AnalyticsStatistics({ insights, loading }) {
   const { tasks, completedCount } = useStudyTasks();
+  const metrics = focusMetrics(insights);
+  const display = focusDisplay(metrics.totalFocusSeconds);
 
   const completionRate =
     tasks.length > 0
@@ -92,17 +68,15 @@ function AnalyticsStatistics() {
         )
       : 0;
 
-  // Focus session statistics will be
-  // connected to shared session history later.
-  const focusMinutes = 0;
-  const currentStreak = 0;
-  const completedSessions = 0;
+  const focusValue = loading && !insights ? "…" : display.value;
+  const currentStreak = loading && !insights ? "…" : metrics.streak;
+  const completedSessions = loading && !insights ? "…" : metrics.totalSessions;
 
   const statistics = [
     {
       title: "Your focus time",
-      value: focusMinutes,
-      unit: "min",
+      value: focusValue,
+      unit: display.unit,
       description: "Completed focus sessions",
       icon: Clock3,
       type: "focus",
@@ -154,10 +128,11 @@ function AnalyticsStatistics() {
 // Weekly Focus Chart
 // -----------------------------------
 
-function AnalyticsWeeklyChart() {
+function AnalyticsWeeklyChart({ insights, loading }) {
   const [period, setPeriod] = useState("thisWeek");
-
-  const data = weeklyData[period];
+  const metrics = focusMetrics(insights);
+  const data = period === "thisWeek" ? metrics.currentWeek : metrics.previousWeek;
+  const axisMax = chartAxisMax(data);
 
   const periodLabel =
     period === "thisWeek" ? "This week" : "Last week";
@@ -173,7 +148,7 @@ function AnalyticsWeeklyChart() {
   const chartDescription = data
     .map(
       (item) =>
-        `${item.day}: ${item.hours} sample hours`
+        `${item.day}: ${item.hours.toFixed(2)} hours`
     )
     .join(", ");
 
@@ -217,22 +192,21 @@ function AnalyticsWeeklyChart() {
           Focus time
         </span>
 
-        <span>Illustrative weekly activity</span>
+        <span>{loading && !insights ? "Loading focus data..." : "Completed focus sessions"}</span>
       </div>
 
       {/* Chart Body */}
       <div
         className="sf-analytics-page__chart"
         role="img"
-        aria-label={`Illustrative weekly focus chart. ${chartDescription}`}
+        aria-label={`Weekly focus chart. ${chartDescription}`}
       >
         {/* Y Axis */}
         <div className="sf-analytics-page__y-axis">
-          {[4, 3, 2, 1, 0].map((hour) => (
-            <span key={hour}>
-              {hour === 0 ? "0" : `${hour}h`}
-            </span>
-          ))}
+          {[4, 3, 2, 1, 0].map((tick) => {
+            const hours = (tick / 4) * axisMax;
+            return <span key={tick}>{hours === 0 ? "0" : `${hours}h`}</span>;
+          })}
         </div>
 
         {/* Chart Plot */}
@@ -252,13 +226,13 @@ function AnalyticsWeeklyChart() {
           <div className="sf-analytics-page__bars">
             {data.map((item, index) => {
               const height =
-                (item.hours / 4) * 100;
+                Math.min(100, (item.hours / axisMax) * 100);
 
               return (
                 <div
                   className="sf-analytics-page__bar-column"
                   key={item.day}
-                  title={`${item.day}: ${item.hours} sample hours`}
+                  title={`${item.day}: ${item.hours.toFixed(2)} hours`}
                 >
                   <div
                     className={`sf-analytics-page__bar ${
@@ -313,6 +287,8 @@ function AnalyticsFooter() {
 // -----------------------------------
 
 export default function AnalyticsPage() {
+  const { data: insights, loading, error } = useStudyInsights();
+
   function goToTasks() {
     window.location.hash = "#tasks";
   }
@@ -347,16 +323,16 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Four Statistics Cards */}
-      <AnalyticsStatistics />
+      <AnalyticsStatistics insights={insights} loading={loading} />
 
       {/* Weekly Chart */}
-      <AnalyticsWeeklyChart />
+      <AnalyticsWeeklyChart insights={insights} loading={loading} />
 
       {/* Informational Note */}
       <p className="sf-analytics-page__note">
-        The weekly chart shows illustrative activity.
-        Focus-session history will be connected in
-        an upcoming development step.
+        {error
+          ? `Unable to refresh study analytics: ${error}`
+          : "Study time includes completed focus sessions saved to MongoDB. Weeks begin on Monday."}
       </p>
 
       {/* Footer */}

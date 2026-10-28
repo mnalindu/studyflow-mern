@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useAuth } from "./AuthContext";
 
 import {
   Leaf,
@@ -12,7 +13,6 @@ import {
   NotebookPen,
   Users,
   Settings,
-  Bell,
   ArrowUpRight,
   ChevronRight,
   ChevronDown,
@@ -25,6 +25,7 @@ import {
   Check,
   Plus,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 
 // =====================================
@@ -60,14 +61,13 @@ import PreferencesModal, {
 // =====================================
 
 import { useStudyTasks } from "./StudyTasksContext";
+import DashboardNotifications from "./DashboardNotifications";
 
 // =====================================
 // Dashboard Styles
 // =====================================
 
 import "./Dashboard.css";
-
-const studentName = "Alex";
 
 // =====================================
 // Sidebar Navigation Items
@@ -115,15 +115,19 @@ const navigation = [
 // Dashboard Sidebar
 // =====================================
 
+
 function DashboardSidebar({
   mobileOpen,
   closeMobile,
   activePage,
   onOpenPreferences,
+  onLogout,
+  studentName,
+  avatarInitial,
+  isLoggingOut,
 }) {
   const { pendingCount } = useStudyTasks();
 
-  // Navigate between workspace pages
   function openSection(item) {
     closeMobile();
 
@@ -132,7 +136,6 @@ function DashboardSidebar({
     }
   }
 
-  // Open Preferences Modal
   function handlePreferences() {
     closeMobile();
     onOpenPreferences();
@@ -141,39 +144,26 @@ function DashboardSidebar({
   return (
     <aside
       className={`sf-dash-sidebar ${
-        mobileOpen
-          ? "sf-dash-sidebar--open"
-          : ""
+        mobileOpen ? "sf-dash-sidebar--open" : ""
       }`}
     >
-      {/* =================================
-          StudyFlow Logo
-      ================================= */}
-
+      {/* Logo */}
       <a
         href="#dashboard"
         className="sf-dash-sidebar__brand"
         onClick={closeMobile}
       >
         <span className="sf-dash-sidebar__logo">
-          <Leaf
-            size={27}
-            strokeWidth={1.8}
-          />
+          <Leaf size={27} strokeWidth={1.8} />
         </span>
 
         <span>
           StudyFlow
-          <span className="sf-dash-sidebar__dot">
-            .
-          </span>
+          <span className="sf-dash-sidebar__dot">.</span>
         </span>
       </a>
 
-      {/* =================================
-          Workspace Card
-      ================================= */}
-
+      {/* Workspace Card */}
       <button
         type="button"
         className="sf-dash-sidebar__workspace"
@@ -184,39 +174,26 @@ function DashboardSidebar({
         </span>
 
         <span className="sf-dash-sidebar__workspace-text">
-          <strong>
-            {studentName}'s workspace
-          </strong>
-
-          <small>
-            Your learning headquarters
-          </small>
+          <strong>{studentName}'s workspace</strong>
+          <small>Your learning headquarters</small>
         </span>
 
         <ChevronRight size={17} />
       </button>
 
-      {/* =================================
-          Workspace Section Label
-      ================================= */}
-
+      {/* Section Title */}
       <div className="sf-dash-sidebar__section-title">
         WORKSPACE
       </div>
 
-      {/* =================================
-          Sidebar Navigation
-      ================================= */}
-
+      {/* Navigation */}
       <nav
         className="sf-dash-sidebar__navigation"
         aria-label="Dashboard navigation"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
-
-          const isActive =
-            item.name === activePage;
+          const isActive = item.name === activePage;
 
           return (
             <button
@@ -227,27 +204,17 @@ function DashboardSidebar({
                   ? "sf-dash-sidebar__nav-item--active"
                   : ""
               }`}
-              aria-current={
-                isActive ? "page" : undefined
-              }
+              aria-current={isActive ? "page" : undefined}
               onClick={() => openSection(item)}
             >
-              <Icon
-                size={21}
-                strokeWidth={1.9}
-              />
-
+              <Icon size={21} strokeWidth={1.9} />
               <span>{item.name}</span>
-
-              {/* Pending Tasks Count */}
 
               {item.name === "My tasks" && (
                 <span className="sf-dash-sidebar__count">
                   {pendingCount}
                 </span>
               )}
-
-              {/* Study Rooms Badge */}
 
               {item.name === "Study rooms" && (
                 <span className="sf-dash-sidebar__new">
@@ -259,14 +226,8 @@ function DashboardSidebar({
         })}
       </nav>
 
-      {/* =================================
-          Sidebar Bottom Navigation
-      ================================= */}
-
+      {/* Bottom Navigation */}
       <div className="sf-dash-sidebar__bottom">
-
-        {/* Back to Website */}
-
         <a
           href="#home"
           className="sf-dash-sidebar__bottom-item"
@@ -276,8 +237,6 @@ function DashboardSidebar({
           Back to website
         </a>
 
-        {/* Preferences Button */}
-
         <button
           type="button"
           className="sf-dash-sidebar__bottom-item"
@@ -286,11 +245,34 @@ function DashboardSidebar({
           <Settings size={21} />
           Preferences
         </button>
+      </div>
 
+      {/* User Profile and Logout */}
+      <div className="sf-dash-sidebar__user">
+        <span className="sf-dash-sidebar__user-avatar">
+          {avatarInitial}
+        </span>
+
+        <div className="sf-dash-sidebar__user-details">
+          <strong>{studentName}</strong>
+          <small>Student </small>
+        </div>
+
+        <button
+          type="button"
+          className="sf-dash-sidebar__logout"
+          aria-label="Sign out"
+          title={isLoggingOut ? "Signing out..." : "Sign out"}
+          onClick={onLogout}
+          disabled={isLoggingOut}
+        >
+          <LogOut size={21} strokeWidth={1.8} />
+        </button>
       </div>
     </aside>
   );
 }
+
 
 // =====================================
 // Dashboard Top Header
@@ -301,6 +283,9 @@ function DashboardHeader({
   showNotice,
   pageName,
   onOpenPreferences,
+  studentName,
+  avatarInitial,
+  notificationUserKey,
 }) {
   const [search, setSearch] = useState("");
 
@@ -405,41 +390,14 @@ function DashboardHeader({
           </span>
         </form>
 
-        {/* =================================
-            Notifications
-        ================================= */}
-
-        <div className="sf-dash-header__popup">
-
-          <button
-            type="button"
-            className="sf-dash-header__icon-button"
-            aria-label="Notifications"
-            aria-expanded={notificationsOpen}
-            onClick={() =>
-              setNotificationsOpen(
-                (current) => !current
-              )
-            }
-          >
-            <Bell size={21} />
-          </button>
-
-          {notificationsOpen && (
-            <div className="sf-dash-header__dropdown">
-
-              <strong>
-                Notifications
-              </strong>
-
-              <p>
-                No new notifications yet.
-              </p>
-
-            </div>
-          )}
-
-        </div>
+        {/* MongoDB-backed notifications (original bell location) */}
+        <DashboardNotifications
+          key={notificationUserKey}
+          userKey={notificationUserKey}
+          open={notificationsOpen}
+          onToggle={() => setNotificationsOpen((current) => !current)}
+          onClose={() => setNotificationsOpen(false)}
+        />
 
         {/* =================================
             USER PROFILE BUTTON
@@ -458,7 +416,7 @@ function DashboardHeader({
             {/* Profile Avatar */}
 
             <span className="sf-dash-header__avatar">
-              {studentName.charAt(0)}
+              {avatarInitial}
             </span>
 
             {/* Username */}
@@ -588,7 +546,7 @@ function WelcomeIllustration() {
 // Dashboard Welcome Section
 // =====================================
 
-function DashboardWelcome() {
+function DashboardWelcome({ firstName }) {
   const today = new Date().toLocaleDateString(
     "en-US",
     {
@@ -627,7 +585,7 @@ function DashboardWelcome() {
             </p>
 
             <h1>
-              Welcome back, {studentName}.
+              Welcome back, {firstName}.
             </h1>
 
             <p className="sf-dash-welcome__description">
@@ -743,6 +701,16 @@ function DashboardWelcome() {
 export default function Dashboard({
   view = "dashboard",
 }) {
+  // Authentication State
+  const { user, logout } = useAuth();
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+
+  const displayName = user?.name?.trim() || "Student";
+  const firstName = displayName.split(/\s+/)[0];
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+
   // =====================================
   // Sidebar State
   // =====================================
@@ -809,6 +777,26 @@ export default function Dashboard({
     setPreferencesOpen(false);
   }
 
+  async function handleLogout() {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    setLogoutError("");
+    setPreferencesOpen(false);
+    setMobileOpen(false);
+
+    try {
+      // AuthContext calls POST /api/auth/logout,
+      // clears the current user, and navigates to #login.
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setLogoutError("Unable to log out. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
+
   // =====================================
   // Save Preferences
   // =====================================
@@ -850,11 +838,13 @@ export default function Dashboard({
 
       <DashboardSidebar
         mobileOpen={mobileOpen}
-        closeMobile={() =>
-          setMobileOpen(false)
-        }
+        closeMobile={() => setMobileOpen(false)}
         activePage={pageName}
         onOpenPreferences={handleOpenPreferences}
+        onLogout={handleLogout}
+        studentName={displayName}
+        avatarInitial={avatarInitial}
+        isLoggingOut={isLoggingOut}
       />
 
       {/* =================================
@@ -872,6 +862,9 @@ export default function Dashboard({
           showNotice={setNotice}
           pageName={pageName}
           onOpenPreferences={handleOpenPreferences}
+          studentName={displayName}
+          avatarInitial={avatarInitial}
+          notificationUserKey={user?.id ?? user?._id ?? user?.email ?? ""}
         />
 
         {/* =================================
@@ -901,6 +894,19 @@ export default function Dashboard({
                 <X size={18} />
               </button>
 
+            </div>
+          )}
+
+          {logoutError && (
+            <div className="sf-dashboard__notice" role="alert">
+              <span>{logoutError}</span>
+              <button
+                type="button"
+                aria-label="Dismiss logout error"
+                onClick={() => setLogoutError("")}
+              >
+                <X size={18} />
+              </button>
             </div>
           )}
 
@@ -937,7 +943,7 @@ export default function Dashboard({
             <>
               {/* Dashboard Welcome */}
 
-              <DashboardWelcome />
+              <DashboardWelcome firstName={firstName} />
 
               {/* Quick Actions + Statistics */}
 
@@ -976,7 +982,7 @@ export default function Dashboard({
 
       {preferencesOpen && (
         <PreferencesModal
-          studentName={studentName}
+          studentName={displayName}
           onClose={handleClosePreferences}
           onSaved={handleSavedPreferences}
         />

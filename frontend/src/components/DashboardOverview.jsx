@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { useStudyTasks } from "./StudyTasksContext";
+import { useStudyInsights, focusMetrics, focusDisplay } from "../hooks/useStudyInsights";
 import "./DashboardOverview.css";
 
 const quickActions = [
@@ -140,10 +141,13 @@ function QuickActions({ showNotice }) {
 function StatisticsCards({
   dailyGoalMinutes = 120,
 }) {
-  const {
-    tasks,
-    completedCount,
-  } = useStudyTasks();
+  const { tasks, completedCount } = useStudyTasks();
+  const { data, loading, error } = useStudyInsights();
+  const metrics = focusMetrics(data);
+  const todayMinutes = Math.round(metrics.todaySeconds / 60);
+  const goalMinutes = Math.max(1, Number(dailyGoalMinutes) || 120);
+  const goalPercent = Math.min(100, Math.round(todayMinutes / goalMinutes * 100));
+  const focus = focusDisplay(metrics.todaySeconds);
 
   const currentStatistics = statistics.map(
     (stat) => {
@@ -155,11 +159,17 @@ function StatisticsCards({
         };
       }
 
+      if (stat.type === "focus") {
+        return { ...stat, value: loading && !data ? "…" : focus.value, unit: focus.unit };
+      }
+      if (stat.type === "streak") {
+        return { ...stat, value: loading && !data ? "…" : String(metrics.streak) };
+      }
       if (stat.type === "goal") {
         return {
           ...stat,
-          description:
-            `0 of ${dailyGoalMinutes} minutes completed`,
+          value: loading && !data ? "…" : `${goalPercent}%`,
+          description: `${todayMinutes} of ${goalMinutes} minutes completed`,
         };
       }
 
@@ -182,6 +192,10 @@ function StatisticsCards({
           Updated as you go
         </span>
       </div>
+
+      {error && <p role="alert" style={{ fontSize: 13, color: "#b45309" }}>
+        Study statistics could not refresh: {error}
+      </p>}
 
       {/* Statistics Grid */}
       <div className="sf-dash-overview__stats">

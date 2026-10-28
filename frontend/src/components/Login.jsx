@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 
 import "./Login.css";
+import { loginUser } from "../services/authApi";
+import { signInWithGoogle } from "../services/googleAuthApi";
+import GoogleSignInButton from "./GoogleSignInButton";
+import { useAuth } from "./AuthContext";
 
 // Decorative dashboard preview on the left
 function LoginPreview() {
@@ -176,15 +180,76 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  const { setAuthenticatedUser } = useAuth();
 
-    // Backend authentication will be integrated later.
-    // Do not save or send credentials at this stage.
+  
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  setNotice("");
+
+  // Basic validation
+  if (!email.trim() || !password) {
+    setNotice("Please enter your email and password.");
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // Send credentials to Express backend
+    const response = await loginUser({
+      email: email.trim(),
+      password,
+    });
+
+    
+    if (response.success && response.user) {
+        // Save logged-in user in AuthContext
+        setAuthenticatedUser(response.user);
+
+        setNotice("");
+
+        // Navigate to Dashboard
+        window.location.hash = "#dashboard";
+     }
+
+  } catch (error) {
+    // Display backend validation/login errors
     setNotice(
-      "Login is not connected yet. We're building secure account authentication next."
+      error.message || "Login failed. Please try again."
     );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+  // Google Identity Services gives us a Google ID token.
+  // The Express backend verifies the token and sets the usual
+  // StudyFlow HttpOnly session cookie. Never store the ID token.
+  async function handleGoogleCredential(credential) {
+    if (isSubmitting) return;
+
+    setNotice("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await signInWithGoogle(credential);
+
+      if (!response.success || !response.user) {
+        throw new Error("Google sign-in could not be completed.");
+      }
+
+      setAuthenticatedUser(response.user);
+      window.location.hash = "#dashboard";
+    } catch (error) {
+      setNotice(error.message || "Google sign-in failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleForgotPassword() {
@@ -317,8 +382,9 @@ export default function Login() {
             <button
               type="submit"
               className="sf-login__submit"
+              disabled={isSubmitting}
             >
-              Log in
+              {isSubmitting ? "Signing in..." : "Log in"}
               <ArrowRight size={20} />
             </button>
           </form>
@@ -335,6 +401,14 @@ export default function Login() {
 
           <div className="sf-login__divider">
             <span>or</span>
+          </div>
+
+          {/* Google Identity Services official sign-in button */}
+          <div className="sf-login__google">
+            <GoogleSignInButton
+              onCredential={handleGoogleCredential}
+              busy={isSubmitting}
+            />
           </div>
 
           <p className="sf-login__signup-text">
