@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -18,14 +17,40 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // Required for email/password accounts, optional for Google-only accounts.
+    // Never return the hash from ordinary user queries.
     passwordHash: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
       select: false,
+    },
+
+    // Stable Google account identifier ("sub" from a VERIFIED ID token).
+    // Not the email address: Google account emails can change.
+    googleId: {
+      type: String,
+      trim: true,
+      select: false,
+      maxlength: 255,
     },
   },
   {
     timestamps: true,
+  }
+);
+
+// Existing users without googleId are not affected by this index.
+// A Google account can be linked to only one StudyFlow account.
+userSchema.index(
+  { googleId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      googleId: { $type: "string" },
+    },
+    name: "unique_google_account_id",
   }
 );
 

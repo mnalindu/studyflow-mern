@@ -1,4 +1,3 @@
-
 const express = require("express");
 const { rateLimit } = require("express-rate-limit");
 
@@ -9,11 +8,16 @@ const {
   getMe,
 } = require("../controllers/authController");
 
+const {
+  googleLogin,
+  linkGoogleAccount,
+} = require("../controllers/googleAuthController");
+
 const requireAuth = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Limit repeated authentication attempts
+// Limit repeated authentication attempts (including Google token attempts).
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 15,
@@ -21,20 +25,22 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message:
-      "Too many attempts. Please try again later.",
+    message: "Too many attempts. Please try again later.",
   },
 });
 
-// Public routes
+// Existing email/password auth (unchanged).
 router.post("/register", authLimiter, register);
-
 router.post("/login", authLimiter, login);
 
-// Logout
-router.post("/logout", logout);
+// New Google Identity Services flow: { "credential": "<ID_TOKEN>" }
+router.post("/google", authLimiter, googleLogin);
 
-// Protected route
+// Explicitly link an existing password account only after logging in.
+router.post("/google/link", requireAuth, authLimiter, linkGoogleAccount);
+
+// Existing session routes (unchanged).
+router.post("/logout", logout);
 router.get("/me", requireAuth, getMe);
 
 module.exports = router;

@@ -216,3 +216,8 @@ exports.getMe = async (req, res) => {
     user: publicUser(req.user),
   });
 };
+
+// Share the existing session behavior with Google authentication.
+// These helpers are not exposed as HTTP endpoints.
+exports.publicUser = publicUser;
+exports.setSessionCookie = setSessionCookie;
