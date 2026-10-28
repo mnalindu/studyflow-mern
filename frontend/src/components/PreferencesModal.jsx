@@ -5,9 +5,19 @@ import {
   Leaf,
   X,
   Check,
+  Link2,
+  ShieldCheck,
+  RefreshCw,
 } from "lucide-react";
 
 import "./PreferencesModal.css";
+import "./PreferencesGoogleIntegration.css";
+import GoogleSignInButton from "./GoogleSignInButton";
+import { useAuth } from "./AuthContext";
+import {
+  getGoogleLinkStatus,
+  linkGoogleAccount,
+} from "../services/googleAuthApi";
 
 // ------------------------------------
 // Browser storage
@@ -56,6 +66,13 @@ export default function PreferencesModal({
 
   const [error, setError] = useState("");
 
+  // Current authenticated student and Google account linking.
+  const { user } = useAuth();
+  const [googleStatus, setGoogleStatus] = useState("loading");
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const [googleError, setGoogleError] = useState("");
+  const [googleMessage, setGoogleMessage] = useState("");
+
   const dialogRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -103,7 +120,7 @@ export default function PreferencesModal({
 
     const focusable = Array.from(
       dialogRef.current?.querySelectorAll(
-        'button:not([disabled]), input:not([disabled])'
+        'button:not([disabled]), input:not([disabled]), iframe'
       ) || []
     );
 
@@ -124,6 +141,72 @@ export default function PreferencesModal({
     ) {
       event.preventDefault();
       first.focus();
+    }
+  }
+
+  // ------------------------------------
+  // Check Google account link status
+  // ------------------------------------
+
+  useEffect(() => {
+    let active = true;
+
+    getGoogleLinkStatus()
+      .then((response) => {
+        if (active) {
+          setGoogleStatus(response.linked ? "linked" : "unlinked");
+        }
+      })
+      .catch((requestError) => {
+        if (active) {
+          setGoogleStatus("error");
+          setGoogleError(
+            requestError.message || "Could not check Google connection."
+          );
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  async function retryGoogleStatus() {
+    setGoogleStatus("loading");
+    setGoogleError("");
+
+    try {
+      const response = await getGoogleLinkStatus();
+      setGoogleStatus(response.linked ? "linked" : "unlinked");
+    } catch (requestError) {
+      setGoogleStatus("error");
+      setGoogleError(
+        requestError.message || "Could not check Google connection."
+      );
+    }
+  }
+
+  async function handleGoogleCredential(credential) {
+    if (googleBusy || googleStatus !== "unlinked") return;
+
+    setGoogleBusy(true);
+    setGoogleError("");
+    setGoogleMessage("");
+
+    try {
+      // The Express backend verifies the Google ID token and
+      // checks that its verified email matches the logged-in user.
+      const response = await linkGoogleAccount(credential);
+      setGoogleStatus("linked");
+      setGoogleMessage(
+        response.message || "Google account connected successfully."
+      );
+    } catch (requestError) {
+      setGoogleError(
+        requestError.message || "Could not connect your Google account."
+      );
+    } finally {
+      setGoogleBusy(false);
     }
   }
 
@@ -294,9 +377,8 @@ export default function PreferencesModal({
             </p>
 
             <p>
-              Account syncing and study reminders
-              will be available when the backend
-              is connected.
+              Your tasks, notes and reminders are
+              stored in your StudyFlow account.
             </p>
 
           </div>
@@ -311,6 +393,80 @@ export default function PreferencesModal({
           </button>
 
         </form>
+
+        {/* Google account linking (same existing student account) */}
+        <section
+          className="sf-preferences-google"
+          aria-labelledby="sf-preferences-google-title"
+        >
+          <div className="sf-preferences-google__heading">
+            <span className="sf-preferences-google__icon" aria-hidden="true">
+              <Link2 size={21} />
+            </span>
+            <div className="sf-preferences-google__heading-copy">
+              <h3 id="sf-preferences-google-title">Google account</h3>
+              <p>Connect Google for an easier way to sign in.</p>
+            </div>
+            {googleStatus === "linked" && (
+              <span className="sf-preferences-google__badge">
+                <Check size={14} /> Connected
+              </span>
+            )}
+          </div>
+
+          <p className="sf-preferences-google__details">
+            Your StudyFlow email: <strong>{user?.email || "Unavailable"}</strong>
+          </p>
+          <p className="sf-preferences-google__hint">
+            Choose the Google account with this same email address.
+            Your tasks, notes and other data will stay in this account.
+          </p>
+
+          {googleStatus === "loading" && (
+            <p className="sf-preferences-google__status" role="status">
+              Checking Google connection…
+            </p>
+          )}
+
+          {googleStatus === "linked" && (
+            <div className="sf-preferences-google__connected" role="status">
+              <ShieldCheck size={20} />
+              <span>
+                {googleMessage || "Google is connected. You can use Continue with Google next time."}
+              </span>
+            </div>
+          )}
+
+          {googleStatus === "unlinked" && (
+            <div className="sf-preferences-google__button">
+              <GoogleSignInButton
+                onCredential={handleGoogleCredential}
+                busy={googleBusy}
+              />
+              {googleBusy && (
+                <p className="sf-preferences-google__status" role="status">
+                  Connecting your Google account…
+                </p>
+              )}
+            </div>
+          )}
+
+          {googleStatus === "error" && (
+            <button
+              type="button"
+              className="sf-preferences-google__retry"
+              onClick={retryGoogleStatus}
+            >
+              <RefreshCw size={16} /> Retry connection check
+            </button>
+          )}
+
+          {googleError && (
+            <p className="sf-preferences-google__error" role="alert">
+              {googleError}
+            </p>
+          )}
+        </section>
 
       </section>
     </div>

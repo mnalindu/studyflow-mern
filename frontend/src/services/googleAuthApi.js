@@ -1,83 +1,54 @@
-
+// Authenticated requests send only our StudyFlow HttpOnly cookie.
+// The Google ID token is never stored in localStorage.
 const API_URL = (
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:5000"
+  import.meta.env.VITE_API_URL || "http://localhost:5000"
 ).replace(/\/+$/, "");
 
-// =====================================
-// Common Google Authentication Request
-// =====================================
-
-async function googleAuthRequest(endpoint, credential) {
-  if (
-    typeof credential !== "string" ||
-    !credential.trim()
-  ) {
-    throw new Error(
-      "Google did not return a valid credential."
-    );
-  }
-
+async function requestGoogleAuth(endpoint, options = {}) {
   let response;
 
   try {
-    response = await fetch(
-      `${API_URL}${endpoint}`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        // Send existing JWT HttpOnly session cookie
-        credentials: "include",
-
-        body: JSON.stringify({
-          credential,
-        }),
-      }
-    );
+    response = await fetch(`${API_URL}${endpoint}`, {
+      method: options.method || "GET",
+      credentials: "include",
+      headers: options.body ? { "Content-Type": "application/json" } : undefined,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
   } catch {
-    throw new Error(
-      "Cannot connect to StudyFlow backend."
-    );
+    throw new Error("Cannot connect to the StudyFlow backend. Is it running?");
   }
 
-  const result = await response
-    .json()
-    .catch(() => ({}));
-
+  const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(
-      result.message ||
-        `Google authentication failed (${response.status}).`
-    );
+    throw new Error(data.message || `Google account request failed (${response.status}).`);
   }
-
-  return result;
+  return data;
 }
 
-// =====================================
-// GOOGLE LOGIN / SIGNUP
-// POST /api/auth/google
-// =====================================
+function credentialBody(credential) {
+  if (typeof credential !== "string" || !credential.trim()) {
+    throw new Error("Google did not return a valid credential.");
+  }
+  return { credential };
+}
 
+// Existing login flow (keep this export so Login.jsx still works).
 export function signInWithGoogle(credential) {
-  return googleAuthRequest(
-    "/api/auth/google",
-    credential
-  );
+  return requestGoogleAuth("/api/auth/google", {
+    method: "POST",
+    body: credentialBody(credential),
+  });
 }
 
-// =====================================
-// LINK GOOGLE TO EXISTING ACCOUNT
-// POST /api/auth/google/link
-// =====================================
-
+// Link a verified Google account to the current logged-in student.
 export function linkGoogleAccount(credential) {
-  return googleAuthRequest(
-    "/api/auth/google/link",
-    credential
-  );
+  return requestGoogleAuth("/api/auth/google/link", {
+    method: "POST",
+    body: credentialBody(credential),
+  });
+}
+
+// Check linked state even after a page refresh.
+export function getGoogleLinkStatus() {
+  return requestGoogleAuth("/api/auth/google/status");
 }

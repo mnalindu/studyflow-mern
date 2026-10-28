@@ -1,0 +1,151 @@
+/* Extra styles for Google account linking only.
+   Keep the original PreferencesModal.css unchanged. */
+.sf-preferences-google {
+  margin-top: 26px;
+  padding: 22px;
+  border: 1px solid #dce7d5;
+  border-radius: 14px;
+  background: #f3f7ef;
+  color: #456b4c;
+}
+
+.sf-preferences-google__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sf-preferences-google__icon {
+  display: grid;
+  flex: 0 0 43px;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  border-radius: 11px;
+  background: #e2eed9;
+  color: #4d7655;
+}
+
+.sf-preferences-google__heading-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.sf-preferences-google__heading h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #365c42;
+  font-weight: 800;
+}
+
+.sf-preferences-google__heading p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #7d9575;
+}
+
+.sf-preferences-google__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 9px;
+  border-radius: 50px;
+  background: #e0eed8;
+  color: #47724a;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.sf-preferences-google__details {
+  margin: 19px 0 5px;
+  font-size: 13px;
+  color: #678060;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.sf-preferences-google__details strong {
+  color: #315d45;
+}
+
+.sf-preferences-google__hint {
+  margin: 0;
+  font-size: 12px;
+  color: #809674;
+  line-height: 1.65;
+}
+
+.sf-preferences-google__button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 18px;
+  padding: 15px 10px;
+  border: 1px solid #e5ecdd;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.sf-preferences-google__button .sf-google-signin {
+  max-width: 400px;
+}
+
+.sf-preferences-google__status {
+  margin: 15px 0 0;
+  font-size: 13px;
+  color: #66885b;
+  line-height: 1.6;
+}
+
+.sf-preferences-google__connected {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px;
+  margin-top: 18px;
+  border-radius: 10px;
+  border: 1px solid #cee2c5;
+  background: #e6f2df;
+  color: #416a47;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.sf-preferences-google__connected svg {
+  flex: 0 0 auto;
+}
+
+.sf-preferences-google__error {
+  margin: 13px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #aa4b41;
+}
+
+.sf-preferences-google__retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  min-height: 41px;
+  padding: 9px 13px;
+  border: 1px solid #bacbb0;
+  border-radius: 9px;
+  background: #fff;
+  color: #3d6649;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sf-preferences-google__retry:hover { background: #eaf3e4; }
+
+@media (max-width: 480px) {
+  .sf-preferences-google { padding: 15px; }
+  .sf-preferences-google__heading { flex-wrap: wrap; }
+  .sf-preferences-google__badge { margin-left: 55px; }
+}

@@ -11,6 +11,7 @@ const {
 const {
   googleLogin,
   linkGoogleAccount,
+  getGoogleLinkStatus,
 } = require("../controllers/googleAuthController");
 
 const requireAuth = require("../middleware/authMiddleware");
@@ -38,6 +39,7 @@ router.post("/google", authLimiter, googleLogin);
 
 // Explicitly link an existing password account only after logging in.
 router.post("/google/link", requireAuth, authLimiter, linkGoogleAccount);
+router.get("/google/status", requireAuth, getGoogleLinkStatus);
 
 // Existing session routes (unchanged).
 router.post("/logout", logout);

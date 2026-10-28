@@ -247,3 +247,31 @@ exports.linkGoogleAccount = async (req, res) => {
     return fail(res, error, "link");
   }
 };
+
+// =====================================
+// GET /api/auth/google/status
+// Authenticated student only.
+// googleId is select:false, so request it explicitly.
+// Never return the Google subject identifier to the browser.
+// =====================================
+exports.getGoogleLinkStatus = async (req, res) => {
+  res.set("Cache-Control", "no-store");
+
+  try {
+    const user = await User.findById(req.user._id).select("+googleId");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Please sign in again.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      linked: Boolean(user.googleId),
+    });
+  } catch (error) {
+    return fail(res, error, "status");
+  }
+};
