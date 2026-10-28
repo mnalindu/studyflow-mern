@@ -8,7 +8,7 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  external_node_modules = ["express", "mongoose"]
+  
 
 # Express API gets precedence over the SPA fallback.
 [[redirects]]
