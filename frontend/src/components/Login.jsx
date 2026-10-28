@@ -16,6 +16,8 @@ import {
 
 import "./Login.css";
 import { loginUser } from "../services/authApi";
+import { signInWithGoogle } from "../services/googleAuthApi";
+import GoogleSignInButton from "./GoogleSignInButton";
 import { useAuth } from "./AuthContext";
 
 // Decorative dashboard preview on the left
@@ -225,6 +227,31 @@ const handleSubmit = async (event) => {
 };
 
 
+  // Google Identity Services gives us a Google ID token.
+  // The Express backend verifies the token and sets the usual
+  // StudyFlow HttpOnly session cookie. Never store the ID token.
+  async function handleGoogleCredential(credential) {
+    if (isSubmitting) return;
+
+    setNotice("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await signInWithGoogle(credential);
+
+      if (!response.success || !response.user) {
+        throw new Error("Google sign-in could not be completed.");
+      }
+
+      setAuthenticatedUser(response.user);
+      window.location.hash = "#dashboard";
+    } catch (error) {
+      setNotice(error.message || "Google sign-in failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   function handleForgotPassword() {
     setNotice(
       "Password recovery will be available after account authentication is connected."
@@ -374,6 +401,14 @@ const handleSubmit = async (event) => {
 
           <div className="sf-login__divider">
             <span>or</span>
+          </div>
+
+          {/* Google Identity Services official sign-in button */}
+          <div className="sf-login__google">
+            <GoogleSignInButton
+              onCredential={handleGoogleCredential}
+              busy={isSubmitting}
+            />
           </div>
 
           <p className="sf-login__signup-text">

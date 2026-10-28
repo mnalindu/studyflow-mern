@@ -1,0 +1,37 @@
+/* Google Sign-In addition only. Original Login.css stays unchanged. */
+.sf-login__google {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.sf-google-signin {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.sf-google-signin__button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sf-google-signin__button--busy {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.sf-google-signin__message,
+.sf-google-signin__error {
+  margin: 10px 0 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sf-google-signin__message { color: #829775; }
+.sf-google-signin__error { color: #a44f42; }
