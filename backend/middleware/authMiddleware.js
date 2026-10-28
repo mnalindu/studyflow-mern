@@ -1,9 +1,9 @@
-
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const requireAuth = async (req, res, next) => {
   try {
+    // AuthContext sends this HttpOnly session cookie.
     const token = req.cookies?.studyflow_session;
 
     if (!token) {
@@ -27,13 +27,13 @@ const requireAuth = async (req, res, next) => {
       });
     }
 
+    // Preserve the authenticated user contract for all APIs.
     req.user = user;
-    next();
-  } catch {
-    return res.status(401).json({
-      success: false,
-      message: "Session expired or invalid.",
-    });
+    return next();
+  } catch (error) {
+    // Important: JWT errors are converted to 401 by errorHandler.
+    // Unexpected MongoDB errors must NOT be reported as 401.
+    return next(error);
   }
 };
 

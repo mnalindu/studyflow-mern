@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const express = require("express");
@@ -15,6 +14,12 @@ const studyInsightsRoutes = require("./routes/studyInsightsRoutes");
 const studyRoomRoutes = require("./routes/studyRoomRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 
+// Centralized error handling (created in Step 07.12.2)
+const {
+  apiNotFound,
+  errorHandler,
+} = require("./middleware/errorMiddleware");
+
 const app = express();
 
 // =====================================
@@ -30,6 +35,7 @@ app.use(
   })
 );
 
+// JSON parser errors are handled by errorHandler below.
 app.use(express.json({ limit: "20kb" }));
 app.use(cookieParser());
 
@@ -61,6 +67,7 @@ app.get("/api/health", (req, res) => {
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
+
 // Task Management Routes
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
@@ -69,14 +76,13 @@ app.use("/api/study-insights", studyInsightsRoutes);
 app.use("/api/study-rooms", studyRoomRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+// =====================================
+// 404 Handler and Central Error Handler
+// IMPORTANT: Both must come AFTER all API routes.
+// =====================================
 
-// Unknown routes
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "API route not found.",
-  });
-});
+app.use(apiNotFound);
+app.use(errorHandler);
 
 // =====================================
 // Start Server
