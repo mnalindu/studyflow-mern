@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -50,6 +52,12 @@ try {
 const app = express();
 app.disable("x-powered-by");
 
+// Render routes traffic through a trusted reverse proxy.
+// This also allows express-rate-limit to identify the client IP correctly.
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 // =====================================
 // Middleware
 // =====================================
@@ -73,12 +81,16 @@ app.use(createTrustedOriginGuard(CLIENT_ORIGIN));
 // API Routes
 // =====================================
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Welcome to StudyFlow Backend API",
+// Local development keeps the existing backend welcome endpoint.
+// Production serves the compiled React app at the same root URL instead.
+if (process.env.NODE_ENV !== "production") {
+  app.get("/", (req, res) => {
+    res.json({
+      success: true,
+      message: "Welcome to StudyFlow Backend API",
+    });
   });
-});
+}
 
 app.get("/api/health", (req, res) => {
   const connected = mongoose.connection.readyState === 1;
@@ -99,6 +111,39 @@ app.use("/api/study-sessions", studySessionRoutes);
 app.use("/api/study-insights", studyInsightsRoutes);
 app.use("/api/study-rooms", studyRoomRoutes);
 app.use("/api/notifications", notificationRoutes);
+
+// =====================================
+// Serve React on Render (production only)
+// =====================================
+
+if (process.env.NODE_ENV === "production") {
+  const frontendDist = path.resolve(__dirname, "../frontend/dist");
+  const frontendIndex = path.join(frontendDist, "index.html");
+
+  if (!fs.existsSync(frontendIndex)) {
+    throw new Error(
+      "Frontend build not found. Run npm run build --prefix frontend first."
+    );
+  }
+
+  // Vite-generated JavaScript, CSS, images, etc.
+  app.use(express.static(frontendDist, { index: false }));
+
+  // React SPA fallback. Never substitute index.html for /api errors.
+  // StudyFlow uses hash routes (#login, #dashboard), which also work here.
+  app.use((req, res, next) => {
+    const isApi = req.path === "/api" || req.path.startsWith("/api/");
+    const isPageRequest = req.method === "GET" || req.method === "HEAD";
+
+    if (isApi || !isPageRequest) {
+      return next();
+    }
+
+    return res.sendFile(frontendIndex, (error) => {
+      if (error) next(error);
+    });
+  });
+}
 
 // =====================================
 // 404 and Central Error Handler
@@ -124,7 +169,7 @@ async function startServer() {
 
     await connectDB();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`StudyFlow Backend running on port ${PORT}`);
     });
   } catch (error) {
