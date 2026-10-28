@@ -1,0 +1,22 @@
+# Netlify project root is the repository root, not the frontend folder.
+[build]
+  command = "npm ci --prefix frontend && npm ci --prefix backend && npm run build --prefix frontend"
+  publish = "frontend/dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["express", "mongoose"]
+
+# Express API gets precedence over the SPA fallback.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Vite/React client-side navigation.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
