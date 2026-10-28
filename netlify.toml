@@ -1,6 +1,8 @@
 # Netlify project root is the repository root, not the frontend folder.
 [build]
-  command = "npm ci --prefix frontend && npm ci --prefix backend && npm run build --prefix frontend"
+  
+  command = "npm ci --include=dev --prefix frontend && npm ci --prefix backend && npm run build --prefix frontend"
+
   publish = "frontend/dist"
 
 [functions]
