@@ -23,6 +23,9 @@ function publicUser(user) {
 }
 
 function setSessionCookie(res, userId) {
+  // Do not cache responses that contain login session details.
+  res.set("Cache-Control", "no-store");
+
   const token = jwt.sign(
     { sub: userId.toString() },
     process.env.JWT_SECRET,
@@ -150,7 +153,9 @@ exports.login = async (req, res) => {
       email: cleanEmail,
     }).select("+passwordHash");
 
-    if (!user) {
+    // Google-only accounts may not have a local password.
+    // Return the same generic 401 instead of causing a bcrypt error.
+    if (!user || typeof user.passwordHash !== "string") {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password.",
@@ -191,6 +196,7 @@ exports.login = async (req, res) => {
 // =====================================
 
 exports.logout = async (req, res) => {
+  res.set("Cache-Control", "no-store");
   res.clearCookie(COOKIE_NAME, cookieOptions);
 
   return res.status(200).json({
@@ -204,6 +210,7 @@ exports.logout = async (req, res) => {
 // =====================================
 
 exports.getMe = async (req, res) => {
+  res.set("Cache-Control", "no-store");
   return res.status(200).json({
     success: true,
     user: publicUser(req.user),
